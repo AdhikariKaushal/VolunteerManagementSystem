@@ -3,7 +3,7 @@ package com.volunteermanagementsystem.model;
 import java.time.LocalDateTime;
 
 /**
- * Wishlist Model — volunteer saves an opportunity for later
+ * Wishlist Model
  * Author: Darpan Ghimire
  */
 
