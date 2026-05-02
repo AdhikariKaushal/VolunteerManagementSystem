@@ -313,7 +313,7 @@ public class VolunteerDAO {
         return list;
     }
 
-    // ─── HELPER ──────────────────────────────────────────────────────────────
+    // HELPER
 
     private Volunteer mapRow(ResultSet rs) throws SQLException {
         Volunteer v = new Volunteer();
