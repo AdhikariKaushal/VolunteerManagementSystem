@@ -6,16 +6,10 @@ import com.volunteermanagementsystem.util.SessionUtil;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * AdminServlet - Handles all admin actions
- * Author: Kaushal Adhikari
- * Group: The GOAT
- */
-@WebServlet("/AdminServlet")
+
 public class AdminServlet extends HttpServlet {
 
     private AdminService adminService = new AdminService();

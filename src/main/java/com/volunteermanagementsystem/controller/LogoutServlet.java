@@ -2,16 +2,10 @@ package com.volunteermanagementsystem.controller;
 
 import com.volunteermanagementsystem.util.SessionUtil;
 
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
-/**
- * LogoutServlet - Destroys session and redirects to login
- * Author: Kaushal Adhikari
- * Group: The GOAT
- */
-@WebServlet("/LogoutServlet")
+
 public class LogoutServlet extends HttpServlet {
 
     @Override
