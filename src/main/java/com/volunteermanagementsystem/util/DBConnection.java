@@ -4,16 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
 public class DBConnection {
 
-    private static final String URL      = "jdbc:mysql://localhost:3306/volunteermanagementsystem?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/volunteermanagementsystem?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "12345";
 
-
-    private DBConnection() {}
-
+    private DBConnection() {
+    }
 
     public static Connection getConnection() throws SQLException {
         try {
@@ -23,7 +21,6 @@ public class DBConnection {
             throw new SQLException("MySQL Driver not found. Check pom.xml dependencies.", e);
         }
     }
-
 
     public static void closeConnection(Connection conn) {
         if (conn != null) {

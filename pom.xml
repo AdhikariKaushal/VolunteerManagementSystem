@@ -85,6 +85,18 @@
                 </configuration>
             </plugin>
 
+            <!-- ✅ Jetty plugin — allows running the project with a local web server -->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>11.0.15</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8081</port>
+                    </httpConnector>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

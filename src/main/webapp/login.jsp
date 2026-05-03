@@ -85,10 +85,10 @@
             </div>
 
             <div class="register-links">
-                <a href="${pageContext.request.contextPath}/volunteer/register.jsp">
+                <a href="${pageContext.request.contextPath}/views/volunteer/register.jsp">
                     Register as Volunteer
                 </a>
-                <a href="${pageContext.request.contextPath}/organization/register.jsp">
+                <a href="${pageContext.request.contextPath}/views/organization/register.jsp">
                     Register as Organization
                 </a>
             </div>

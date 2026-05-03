@@ -27,7 +27,7 @@
     <div class="alert alert-error"><%= request.getAttribute("error") %></div>
     <% } %>
 
-    <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post">
+    <form action="${pageContext.request.contextPath}/RegisterVolunteerServlet" method="post">
         <input type="hidden" name="action" value="register"/>
 
         <div class="form-row">
@@ -43,9 +43,16 @@
 
         <div class="form-row">
             <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" placeholder="Create a strong password" required/>
+            </div>
+            <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <input type="text" id="phone" name="phone" placeholder="9800000000"/>
             </div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
                 <label for="dateOfBirth">Date of Birth</label>
                 <input type="date" id="dateOfBirth" name="dateOfBirth"/>

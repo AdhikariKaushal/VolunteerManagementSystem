@@ -116,9 +116,6 @@ public class VolunteerServlet extends HttpServlet {
 
         try {
             switch (action) {
-                case "register":
-                    handleRegister(request, response, userId);
-                    break;
                 case "updateProfile":
                     handleUpdateProfile(request, response, userId);
                     break;
@@ -140,45 +137,7 @@ public class VolunteerServlet extends HttpServlet {
         }
     }
 
-    private void handleRegister(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws Exception {
-        String fullName = request.getParameter("fullName");
-        String email    = request.getParameter("email");
-        String phone    = request.getParameter("phone");
-        String address  = request.getParameter("address");
-        String skills   = request.getParameter("skills");
-        String dob      = request.getParameter("dateOfBirth");
-        String gender   = request.getParameter("gender");
-        String bio      = request.getParameter("bio");
 
-        if (fullName == null || fullName.trim().isEmpty() ||
-                email == null || email.trim().isEmpty()) {
-            request.setAttribute("error", "Full name and email are required.");
-            request.getRequestDispatcher("/views/volunteer/register.jsp").forward(request, response);
-            return;
-        }
-
-        Volunteer v = new Volunteer();
-        v.setUserId(userId);
-        v.setFullName(fullName.trim());
-        v.setEmail(email.trim());
-        v.setPhone(phone != null ? phone.trim() : "");
-        v.setAddress(address != null ? address.trim() : "");
-        v.setSkills(skills != null ? skills.trim() : "");
-        v.setGender(gender != null ? gender.trim() : "");
-        v.setBio(bio != null ? bio.trim() : "");
-        if (dob != null && !dob.trim().isEmpty()) {
-            v.setDateOfBirth(LocalDate.parse(dob.trim()));
-        }
-
-        int newId = volunteerDAO.registerVolunteer(v);
-        if (newId > 0) {
-            response.sendRedirect(request.getContextPath() + "/VolunteerServlet?action=dashboard&registered=true");
-        } else {
-            request.setAttribute("error", "Registration failed. Please try again.");
-            request.getRequestDispatcher("/views/volunteer/register.jsp").forward(request, response);
-        }
-    }
 
     private void handleUpdateProfile(HttpServletRequest request, HttpServletResponse response, int userId)
             throws Exception {
