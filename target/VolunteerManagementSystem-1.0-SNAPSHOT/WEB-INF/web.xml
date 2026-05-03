@@ -5,138 +5,78 @@
          https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
          version="5.0">
 
-    <display-name>VolunteerManagementSystem</display-name>
+<display-name>VolunteerManagementSystem</display-name>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- WELCOME FILE                               -->
-    <!-- ══════════════════════════════════════════ -->
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+<!-- ══════════════════════════════════════════ -->
+<!-- WELCOME FILE                               -->
+<!-- ══════════════════════════════════════════ -->
+<welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+</welcome-file-list>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- ERROR PAGES                                -->
-    <!-- ══════════════════════════════════════════ -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error404.jsp</location>
-    </error-page>
+<!-- ══════════════════════════════════════════ -->
+<!-- ERROR PAGES                                -->
+<!-- ══════════════════════════════════════════ -->
+<error-page>
+    <error-code>404</error-code>
+    <location>/error404.jsp</location>
+</error-page>
 
-    <error-page>
-        <error-code>500</error-code>
-        <location>/error.jsp</location>
-    </error-page>
+<error-page>
+    <error-code>500</error-code>
+    <location>/error.jsp</location>
+</error-page>
 
-    <error-page>
-        <exception-type>java.lang.Exception</exception-type>
-        <location>/error.jsp</location>
-    </error-page>
+<error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/error.jsp</location>
+</error-page>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- AUTH FILTER                                -->
-    <!-- Protects all pages from unauthorized access-->
-    <!-- ══════════════════════════════════════════ -->
-    <filter>
-        <filter-name>AuthFilter</filter-name>
-        <filter-class>com.volunteermanagementsystem.filter.AuthFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>AuthFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<!-- ══════════════════════════════════════════ -->
+<!-- AUTH FILTER                                -->
+<!-- Protects all pages from unauthorized access-->
+<!-- ══════════════════════════════════════════ -->
+<filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>com.volunteermanagementsystem.filter.AuthFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- SERVLETS                                   -->
-    <!-- ══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════ -->
+<!-- SERVLETS                                   -->
+<!-- ══════════════════════════════════════════ -->
 
-    <!-- Login Servlet -->
-    <servlet>
-        <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.LoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
-    </servlet-mapping>
+<!-- Login Servlet -->
+<servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.LoginServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+</servlet-mapping>
 
-    <!-- Logout Servlet -->
-    <servlet>
-        <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.LogoutServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LogoutServlet</servlet-name>
-        <url-pattern>/LogoutServlet</url-pattern>
-    </servlet-mapping>
+<!-- Logout Servlet -->
+<servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.LogoutServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/LogoutServlet</url-pattern>
+</servlet-mapping>
 
-    <!-- Admin Servlet -->
-    <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.AdminServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/AdminServlet</url-pattern>
-    </servlet-mapping>
-
-    <!-- Opportunity Servlet (Sneha) -->
-    <servlet>
-        <servlet-name>OpportunityServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.OpportunityServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OpportunityServlet</servlet-name>
-        <url-pattern>/opportunity/*</url-pattern>
-    </servlet-mapping>
-
-    <!-- Application Servlet (Anjal) -->
-    <servlet>
-        <servlet-name>ApplicationServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.ApplicationServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ApplicationServlet</servlet-name>
-        <url-pattern>/application/*</url-pattern>
-    </servlet-mapping>
-
-    <!-- Org Register Servlet (Sneha) -->
-    <servlet>
-        <servlet-name>OrgRegisterServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.OrgRegisterServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OrgRegisterServlet</servlet-name>
-        <url-pattern>/org/register</url-pattern>
-    </servlet-mapping>
-
-    <!-- Org Login Servlet (Sneha) -->
-    <servlet>
-        <servlet-name>OrgLoginServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.OrgLoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OrgLoginServlet</servlet-name>
-        <url-pattern>/org/login</url-pattern>
-    </servlet-mapping>
-
-    <!-- Org Dashboard Servlet (Sneha) -->
-    <servlet>
-        <servlet-name>OrgDashboardServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.OrgDashboardServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OrgDashboardServlet</servlet-name>
-        <url-pattern>/org/dashboard</url-pattern>
-    </servlet-mapping>
-
-    <!-- Org Profile Servlet (Sneha) -->
-    <servlet>
-        <servlet-name>OrgProfileServlet</servlet-name>
-        <servlet-class>com.volunteermanagementsystem.controller.OrgProfileServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OrgProfileServlet</servlet-name>
-        <url-pattern>/org/profile</url-pattern>
-    </servlet-mapping>
+<!-- Admin Servlet -->
+<servlet>
+    <servlet-name>AdminServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.AdminServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>AdminServlet</servlet-name>
+    <url-pattern>/AdminServlet</url-pattern>
+</servlet-mapping>
 
 </web-app>
