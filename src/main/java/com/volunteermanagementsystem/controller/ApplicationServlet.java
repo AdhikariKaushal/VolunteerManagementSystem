@@ -1,22 +1,19 @@
 package com.volunteermanagementsystem.controller;
 
-
 import com.volunteermanagementsystem.model.Application;
 import com.volunteermanagementsystem.model.Opportunity;
 import com.volunteermanagementsystem.service.ApplicationService;
 import com.volunteermanagementsystem.service.OpportunityService;
 import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/application/*")
+// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class ApplicationServlet extends HttpServlet {
 
     private final ApplicationService appService = new ApplicationService();
@@ -36,7 +33,6 @@ public class ApplicationServlet extends HttpServlet {
             int oppId = Integer.parseInt(req.getParameter("oppId"));
             Opportunity opp = oppService.getById(oppId);
 
-            // Security: ensure the opportunity belongs to the logged-in org
             if (opp == null || opp.getOrgId() != orgId) {
                 resp.sendRedirect(req.getContextPath() + "/org/dashboard");
                 return;

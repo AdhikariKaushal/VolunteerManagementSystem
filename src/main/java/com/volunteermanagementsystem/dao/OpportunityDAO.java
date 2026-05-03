@@ -1,6 +1,5 @@
 package com.volunteermanagementsystem.dao;
 
-
 import com.volunteermanagementsystem.model.Opportunity;
 import com.volunteermanagementsystem.util.DBConnection;
 
@@ -30,7 +29,26 @@ public class OpportunityDAO {
         }
     }
 
-    /** All opportunities by this org (for dashboard list). */
+    /**
+     * All opportunities across ALL organizations — used by admin manageOpportunities.jsp.
+     * FIX: replaces the old stub getAllOpportunities() that returned an empty list.
+     */
+    public List<Opportunity> findAll() {
+        List<Opportunity> list = new ArrayList<>();
+        String sql = "SELECT o.*, org.org_name FROM opportunity o " +
+                "JOIN organization org ON o.org_id = org.org_id " +
+                "ORDER BY o.created_at DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapRow(rs));
+        } catch (SQLException e) {
+            System.err.println("[OpportunityDAO.findAll] " + e.getMessage());
+        }
+        return list;
+    }
+
+    /** All opportunities by this org (for org dashboard list). */
     public List<Opportunity> findByOrg(int orgId) {
         List<Opportunity> list = new ArrayList<>();
         String sql = "SELECT o.*, org.org_name FROM opportunity o " +

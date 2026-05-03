@@ -2,14 +2,13 @@ package com.volunteermanagementsystem.controller;
 
 import com.volunteermanagementsystem.service.OrganizationService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/org/register")
+// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class OrgRegisterServlet extends HttpServlet {
 
     private final OrganizationService orgService = new OrganizationService();

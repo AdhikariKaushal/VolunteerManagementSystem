@@ -1,18 +1,16 @@
 package com.volunteermanagementsystem.controller;
 
-
 import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.service.OrganizationService;
 import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/org/profile")
+// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class OrgProfileServlet extends HttpServlet {
 
     private final OrganizationService orgService = new OrganizationService();
@@ -26,7 +24,8 @@ public class OrgProfileServlet extends HttpServlet {
         Organization org = orgService.getById(orgId);
 
         req.setAttribute("org", org);
-        req.getRequestDispatcher("//views/organization/profile.jsp").forward(req, resp);
+        // FIX: was "//views/organization/profile.jsp" (double slash — causes 404)
+        req.getRequestDispatcher("/views/organization/profile.jsp").forward(req, resp);
     }
 
     /** Handle profile update form submission. */
@@ -48,7 +47,8 @@ public class OrgProfileServlet extends HttpServlet {
         if (error != null) {
             req.setAttribute("error", error);
             req.setAttribute("org", orgService.getById(orgId));
-            req.getRequestDispatcher("/WEB-INF/views/org/orgProfile.jsp").forward(req, resp);
+            // FIX: was "/WEB-INF/views/org/orgProfile.jsp" — wrong path, file is at /views/organization/profile.jsp
+            req.getRequestDispatcher("/views/organization/profile.jsp").forward(req, resp);
         } else {
             // Refresh session with updated org data
             Organization updatedOrg = orgService.getById(orgId);
