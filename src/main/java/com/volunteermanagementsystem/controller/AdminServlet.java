@@ -6,16 +6,9 @@ import com.volunteermanagementsystem.util.SessionUtil;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * AdminServlet - Handles all admin actions
- * Author: Kaushal Adhikari
- * Group: The GOAT
- */
-@WebServlet("/AdminServlet")
 public class AdminServlet extends HttpServlet {
 
     private AdminService adminService = new AdminService();
@@ -24,7 +17,6 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Security check — only admin can access
         if (!SessionUtil.hasRole(request, "admin")) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
@@ -36,7 +28,6 @@ public class AdminServlet extends HttpServlet {
         switch (action) {
 
             case "dashboard":
-                // Load summary counts for admin dashboard
                 request.setAttribute("totalVolunteers",    adminService.getTotalVolunteers());
                 request.setAttribute("totalOrganizations", adminService.getTotalOrganizations());
                 request.setAttribute("totalOpportunities", adminService.getTotalOpportunities());
@@ -45,21 +36,18 @@ public class AdminServlet extends HttpServlet {
                 break;
 
             case "manageUsers":
-                // Load all users for manage users page
                 List<User> allUsers = adminService.getAllUsers();
                 request.setAttribute("users", allUsers);
                 request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
                 break;
 
             case "pendingUsers":
-                // Load pending registrations
                 List<User> pendingUsers = adminService.getPendingUsers();
                 request.setAttribute("pendingUsers", pendingUsers);
                 request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
                 break;
 
             case "reports":
-                // Load report counts
                 request.setAttribute("totalVolunteers",    adminService.getTotalVolunteers());
                 request.setAttribute("totalOrganizations", adminService.getTotalOrganizations());
                 request.setAttribute("totalOpportunities", adminService.getTotalOpportunities());
@@ -76,7 +64,6 @@ public class AdminServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Security check — only admin can access
         if (!SessionUtil.hasRole(request, "admin")) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;

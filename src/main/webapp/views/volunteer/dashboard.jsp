@@ -1,185 +1,129 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.volunteermanagementsystem.model.Volunteer" %>
-<%@ page import="java.util.List" %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | VolunteerBridge</title>
-
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f6f9; }
-        .layout { display: flex; min-height: 100vh; }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #1a6b3c;
-            color: #fff;
-            padding: 28px 0;
-            position: relative;
-        }
-        .sidebar .brand {
-            padding: 0 24px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-        }
-        .sidebar nav { padding-top: 16px; }
-        .sidebar nav a {
-            display: block;
-            padding: 11px 24px;
-            color: rgba(255,255,255,0.85);
-            text-decoration: none;
-        }
-        .sidebar nav a:hover,
-        .sidebar nav a.active {
-            background: rgba(255,255,255,0.12);
-            color: #fff;
-        }
-
-        /* Main */
-        .main {
-            flex: 1;
-            padding: 32px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .section {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-    </style>
+    <title>Volunteer Dashboard | VolunteerBridge</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/volunteer.css">
 </head>
-
 <body>
-
-<%
-    Volunteer volunteer = (Volunteer) request.getAttribute("volunteer");
-    Integer totalHoursObj = (Integer) request.getAttribute("totalHours");
-    int totalHours = (totalHoursObj != null) ? totalHoursObj : 0;
-
-    List<Object[]> recentApps = (List<Object[]>) request.getAttribute("recentApplications");
-%>
-
-<div class="layout">
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="brand">
-            <h2>🤝 VolunteerBridge</h2>
+        <div class="sidebar-header">
+            <a href="#" class="brand">
+                <i class="fa-solid fa-handshake-angle brand-icon"></i>
+                VolunteerBridge
+            </a>
+            <div class="portal-text">Volunteer Portal</div>
         </div>
 
-        <nav>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=dashboard" class="active">🏠 Dashboard</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=profile">👤 Profile</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=browseOpportunities">🔍 Opportunities</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=applicationHistory">📋 Applications</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=wishlist">❤️ Wishlist</a>
-        </nav>
+        <ul class="nav-links">
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/dashboard.jsp" class="active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/profile.jsp"><i class="fa-regular fa-user"></i> My Profile</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/browseOpportunities.jsp"><i class="fa-solid fa-magnifying-glass"></i> Browse Opportunities</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/applicationHistory.jsp"><i class="fa-solid fa-file-lines"></i> My Applications</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/wishlist.jsp"><i class="fa-solid fa-heart"></i> Wishlist</a></li>
+        </ul>
 
-        <div style="position:absolute; bottom:20px; width:100%;">
-            <a href="${pageContext.request.contextPath}/LogoutServlet" style="color:white; padding:10px 24px; display:block;">🚪 Logout</a>
+        <div class="logout-container">
+            <a href="${pageContext.request.contextPath}/LogoutServlet" class="logout-btn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
         </div>
     </aside>
 
-    <!-- Main -->
-    <main class="main">
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="welcome-text">
+                <h1>Welcome back, ${sessionScope.email != null ? sessionScope.email.split('@')[0] : 'Volunteer'}! 👋</h1>
+                <p>Here is what's happening with your volunteer journey today.</p>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </header>
 
-        <div class="topbar">
-            <h2>
-                Welcome,
-                <%= (volunteer != null) ? volunteer.getFullName() : "User" %>
-            </h2>
-            <span>
-                <%= (volunteer != null) ? volunteer.getEmail() : "" %>
-            </span>
-        </div>
-
-        <!-- Success Message -->
-        <% if ("true".equals(request.getParameter("registered"))) { %>
-        <p style="color:green;">Profile created successfully!</p>
-        <% } %>
-
-        <!-- Stats -->
-        <div class="stats">
-            <div class="stat-card">
-                <h4>Total Hours</h4>
-                <p><%= totalHours %></p>
+        <!-- Dashboard Widgets -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-icon icon-blue"><i class="fa-solid fa-clock"></i></div>
+                <div class="card-info">
+                    <h3>24</h3>
+                    <p>Hours Volunteered</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon icon-green"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="card-info">
+                    <h3>3</h3>
+                    <p>Upcoming Events</p>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <h4>Total Applications</h4>
-                <p><%= (recentApps != null) ? recentApps.size() : 0 %></p>
+            <div class="card">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-award"></i></div>
+                <div class="card-info">
+                    <h3>Top 5%</h3>
+                    <p>Impact Score</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon icon-orange"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                <div class="card-info">
+                    <h3>12</h3>
+                    <p>Organizations Helped</p>
+                </div>
             </div>
         </div>
 
-        <!-- Recent Applications -->
-        <div class="section">
-            <h3>Recent Applications</h3>
-
-            <% if (recentApps == null || recentApps.isEmpty()) { %>
-            <p>No applications yet.</p>
-            <% } else { %>
-
-            <table>
-                <thead>
-                <tr>
-                    <th>Opportunity</th>
-                    <th>Organization</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <% for (Object[] app : recentApps) { %>
-                <tr>
-                    <td><%= app[1] %></td>
-                    <td><%= app[2] %></td>
-                    <td><%= app[3] %></td>
-                    <td><%= app[4] %></td>
-                </tr>
-                <% } %>
-                </tbody>
-            </table>
-
-            <% } %>
-        </div>
-
+        <!-- Recent Activity -->
+        <section class="recent-activity">
+            <div class="section-header">
+                <h2>Recent Activity</h2>
+                <a href="#" class="btn-view-all">View All</a>
+            </div>
+            
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="activity-details">
+                        <h4>Application Approved</h4>
+                        <p>Your application for "Community Food Drive" was accepted.</p>
+                    </div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: #e67e22; background: rgba(230,126,34,0.1);"><i class="fa-solid fa-heart"></i></div>
+                    <div class="activity-details">
+                        <h4>Saved Opportunity</h4>
+                        <p>You saved "Park Cleanup Initiative" to your wishlist.</p>
+                    </div>
+                    <div class="activity-time">1 day ago</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: #3498db; background: rgba(52,152,219,0.1);"><i class="fa-solid fa-certificate"></i></div>
+                    <div class="activity-details">
+                        <h4>Certificate Earned</h4>
+                        <p>You received a certificate for completing 20 hours.</p>
+                    </div>
+                    <div class="activity-time">3 days ago</div>
+                </div>
+            </div>
+        </section>
     </main>
-</div>
 
 </body>
 </html>

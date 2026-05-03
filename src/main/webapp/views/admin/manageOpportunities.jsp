@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.volunteermanagementsystem.util.SessionUtil" %>
-<%@ page import="com.volunteermanagementsystem.model.User" %>
 <%@ page import="com.volunteermanagementsystem.dao.OpportunityDAO" %>
 <%@ page import="com.volunteermanagementsystem.model.Opportunity" %>
 <%@ page import="java.util.List" %>
@@ -11,9 +10,10 @@
         return;
     }
 
-    // Fetch all opportunities directly via DAO
+    // Fetch all opportunities via DAO
+    // FIX: getAllOpportunities() was removed — use findAll() added to OpportunityDAO
     OpportunityDAO opportunityDAO = new OpportunityDAO();
-    List<Opportunity> opportunities = opportunityDAO.getAllOpportunities();
+    List<Opportunity> opportunities = opportunityDAO.findAll();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +82,7 @@
                         <th>#</th>
                         <th>Title</th>
                         <th>Location</th>
-                        <th>Event Date</th>
+                        <th>Deadline</th>
                         <th>Slots</th>
                         <th>Category</th>
                         <th>Status</th>
@@ -102,7 +102,8 @@
                             </div>
                         </td>
                         <td><%= o.getLocation() != null ? o.getLocation() : "—" %></td>
-                        <td><%= o.getEventDate() != null ? o.getEventDate() : "—" %></td>
+                        <%-- FIX: was o.getEventDate() — field is named deadline in the model --%>
+                        <td><%= o.getDeadline() != null ? o.getDeadline() : "—" %></td>
                         <td><%= o.getSlots() %></td>
                         <td><%= o.getCategory() != null ? o.getCategory() : "—" %></td>
                         <td>

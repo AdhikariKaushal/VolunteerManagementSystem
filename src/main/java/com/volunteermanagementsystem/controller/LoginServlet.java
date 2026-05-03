@@ -6,15 +6,9 @@ import com.volunteermanagementsystem.util.SessionUtil;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
-/**
- * LoginServlet - Handles login form submission
- * Author: Kaushal Adhikari
- * Group: The GOAT
- */
-@WebServlet("/LoginServlet")
+
 public class LoginServlet extends HttpServlet {
 
     private AuthService authService = new AuthService();

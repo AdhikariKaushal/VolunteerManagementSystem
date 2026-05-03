@@ -6,12 +6,11 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/volunteermanagementsystem?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private static final String URL      = "jdbc:mysql://localhost:3306/volunteermanagementsystem?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "12345";
+    private static final String PASSWORD = "1234";
 
-    private DBConnection() {
-    }
+    private DBConnection() {}
 
     public static Connection getConnection() throws SQLException {
         try {

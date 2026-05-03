@@ -1,111 +1,108 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.volunteermanagementsystem.model.Volunteer" %>
+<%@ page import="com.volunteermanagementsystem.dao.VolunteerDAO" %>
 <%@ page import="com.volunteermanagementsystem.model.Wishlist" %>
+<%@ page import="com.volunteermanagementsystem.model.Volunteer" %>
 <%@ page import="java.util.List" %>
+<%
+    Integer userId = (Integer) session.getAttribute("userId");
+    if (userId == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+    VolunteerDAO volunteerDAO = new VolunteerDAO();
+    Volunteer volunteer = volunteerDAO.getVolunteerByUserId(userId);
+    List<Wishlist> wishlist = null;
+    if(volunteer != null) {
+        wishlist = volunteerDAO.getWishlist(volunteer.getId());
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist | VolunteerBridge</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f6f9; }
-        .layout { display: flex; min-height: 100vh; }
-        .sidebar { width: 240px; background: #1a6b3c; color: #fff; padding: 28px 0; flex-shrink: 0; }
-        .sidebar .brand { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.15); }
-        .sidebar .brand h2 { font-size: 18px; font-weight: 700; }
-        .sidebar .brand span { font-size: 12px; opacity: 0.7; }
-        .sidebar nav { padding-top: 16px; }
-        .sidebar nav a { display: block; padding: 11px 24px; color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; transition: background 0.2s; }
-        .sidebar nav a:hover, .sidebar nav a.active { background: rgba(255,255,255,0.12); color: #fff; }
-        .sidebar nav a .icon { margin-right: 10px; }
-        .sidebar .logout { position: absolute; bottom: 24px; width: 240px; }
-        .sidebar .logout a { display: block; padding: 11px 24px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; }
-        .main { flex: 1; padding: 32px; }
-        .page-header { margin-bottom: 24px; }
-        .page-header h1 { font-size: 22px; color: #1a2e1a; }
-        .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .wish-card { background: #fff; border-radius: 12px; padding: 22px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 10px; }
-        .wish-card h3 { font-size: 15px; color: #1a2e1a; margin: 0; }
-        .wish-card .org { font-size: 13px; color: #1a6b3c; font-weight: 500; }
-        .wish-meta { display: flex; flex-wrap: wrap; gap: 8px; }
-        .wish-meta span { font-size: 12px; color: #666; background: #f4f6f9; padding: 3px 10px; border-radius: 20px; }
-        .wish-actions { display: flex; gap: 10px; margin-top: 6px; }
-        .btn-apply { flex: 1; padding: 9px; background: #1a6b3c; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-apply:hover { background: #145530; }
-        .btn-remove { padding: 9px 14px; background: #fff; color: #a32d2d; border: 1.5px solid #a32d2d; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-remove:hover { background: #fdecea; }
-        .empty-msg { color: #aaa; font-size: 15px; padding: 40px; text-align: center; background: #fff; border-radius: 12px; }
-        .empty-msg a { color: #1a6b3c; }
-    </style>
+    <title>My Wishlist | VolunteerBridge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/volunteer.css">
 </head>
 <body>
-<%
-    Volunteer volunteer = (Volunteer) request.getAttribute("volunteer");
-    List<Wishlist> wishlist = (List<Wishlist>) request.getAttribute("wishlist");
-%>
-<div class="layout">
+
     <aside class="sidebar">
-        <div class="brand">
-            <h2>🤝 VolunteerBridge</h2>
-            <span>Volunteer Portal</span>
+        <div class="sidebar-header">
+            <a href="#" class="brand">
+                <i class="fa-solid fa-handshake-angle brand-icon"></i>
+                VolunteerBridge
+            </a>
+            <div class="portal-text">Volunteer Portal</div>
         </div>
-        <nav>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=dashboard"><span class="icon">🏠</span>Dashboard</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=profile"><span class="icon">👤</span>My Profile</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=browseOpportunities"><span class="icon">🔍</span>Browse Opportunities</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=applicationHistory"><span class="icon">📋</span>My Applications</a>
-            <a href="${pageContext.request.contextPath}/VolunteerServlet?action=wishlist" class="active"><span class="icon">❤️</span>Wishlist</a>
-        </nav>
-        <div class="logout">
-            <a href="${pageContext.request.contextPath}/LogoutServlet">🚪 Logout</a>
+
+        <ul class="nav-links">
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/dashboard.jsp"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/profile.jsp"><i class="fa-regular fa-user"></i> My Profile</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/browseOpportunities.jsp"><i class="fa-solid fa-magnifying-glass"></i> Browse Opportunities</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/applicationHistory.jsp"><i class="fa-solid fa-file-lines"></i> My Applications</a></li>
+            <li><a href="${pageContext.request.contextPath}/views/volunteer/wishlist.jsp" class="active"><i class="fa-solid fa-heart"></i> Wishlist</a></li>
+        </ul>
+
+        <div class="logout-container">
+            <a href="${pageContext.request.contextPath}/LogoutServlet" class="logout-btn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
         </div>
     </aside>
 
-    <main class="main">
-        <div class="page-header">
-            <h1>My Wishlist ❤️</h1>
-        </div>
+    <main class="main-content">
+        <header class="top-header">
+            <div class="welcome-text">
+                <h1>My Wishlist ❤️</h1>
+                <p>Opportunities you have saved for later.</p>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </header>
 
-        <% if ("true".equals(request.getParameter("added"))) { %>
-        <div class="alert alert-success">Opportunity saved to wishlist!</div>
-        <% } %>
         <% if ("true".equals(request.getParameter("removed"))) { %>
-        <div class="alert alert-success">Removed from wishlist.</div>
+            <div style="color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fa-solid fa-trash"></i> Successfully removed from wishlist!
+            </div>
         <% } %>
 
         <% if (wishlist == null || wishlist.isEmpty()) { %>
-        <div class="empty-msg">
-            Your wishlist is empty. <a href="${pageContext.request.contextPath}/VolunteerServlet?action=browseOpportunities">Browse opportunities</a> and save ones you like!
-        </div>
-        <% } else { %>
-        <div class="wishlist-grid">
-            <% for (Wishlist w : wishlist) { %>
-            <div class="wish-card">
-                <h3><%= w.getOpportunityTitle() %></h3>
-                <div class="org">🏢 <%= w.getOrganizationName() %></div>
-                <div class="wish-meta">
-                    <% if (w.getLocation() != null && !w.getLocation().isEmpty()) { %><span>📍 <%= w.getLocation() %></span><% } %>
-                    <% if (w.getStartDate() != null) { %><span>📅 <%= w.getStartDate() %></span><% } %>
-                </div>
-                <div class="wish-actions">
-                    <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="flex:1;">
-                        <input type="hidden" name="action" value="applyOpportunity"/>
-                        <input type="hidden" name="opportunityId" value="<%= w.getOpportunityId() %>"/>
-                        <button type="submit" class="btn-apply">Apply Now</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post">
-                        <input type="hidden" name="action" value="removeWishlist"/>
-                        <input type="hidden" name="opportunityId" value="<%= w.getOpportunityId() %>"/>
-                        <button type="submit" class="btn-remove">🗑️ Remove</button>
-                    </form>
-                </div>
+            <div class="empty-state">
+                <i class="fa-solid fa-heart-crack empty-icon"></i>
+                <h3>Your wishlist is empty</h3>
+                <p>Browse opportunities and save the ones you like!</p>
+                <a href="${pageContext.request.contextPath}/views/volunteer/browseOpportunities.jsp" class="btn btn-primary">
+                    <i class="fa-solid fa-search"></i> Browse Opportunities
+                </a>
             </div>
-            <% } %>
-        </div>
+        <% } else { %>
+            <div class="opportunities-grid">
+                <% for(Wishlist w : wishlist) { %>
+                <div class="opp-card">
+                    <div class="opp-header"></div>
+                    <div class="opp-body">
+                        <h3 class="opp-title"><%= w.getOpportunityTitle() %></h3>
+                        <div class="opp-org"><i class="fa-solid fa-building-ngo"></i> <%= w.getOrganizationName() %></div>
+                        <p class="opp-desc">Location: <%= w.getLocation() %><br>Starts: <%= w.getStartDate() %></p>
+                        <div class="opp-footer">
+                            <button class="btn btn-primary btn-sm">Apply Now</button>
+                            <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="margin:0;">
+                                <input type="hidden" name="action" value="removeFromWishlist">
+                                <input type="hidden" name="opportunityId" value="<%= w.getOpportunityId() %>">
+                                <button type="submit" class="btn-icon" title="Remove from Wishlist" style="background:#e74c3c; color:white;"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
         <% } %>
+
     </main>
-</div>
+
 </body>
 </html>
