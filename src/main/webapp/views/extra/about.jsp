@@ -62,7 +62,7 @@
     <h2 class="section">👥 The Team</h2>
     <div class="team-grid">
         <div class="team-card"><div class="avatar">K</div><h4>Kaushal Adhikari</h4><p>Auth & Admin Panel</p></div>
-        <div class="team-card"><div class="avatar">D</div><h4>Darpan Ghimire</h4><p>Volunteer Module</p></div>
+        <div class="team-card"><div class="avatar">D</div><h4>Darpan ghimire</h4><p>Volunteer Module</p></div>
         <div class="team-card"><div class="avatar">O</div><h4>Oshan</h4><p>Attendance, Testing & UI</p></div>
     </div>
 
