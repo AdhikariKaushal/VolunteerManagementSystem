@@ -79,4 +79,44 @@
     <url-pattern>/AdminServlet</url-pattern>
 </servlet-mapping>
 
+<!-- Organization Register Servlet -->
+<servlet>
+    <servlet-name>OrgRegisterServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OrgRegisterServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OrgRegisterServlet</servlet-name>
+    <url-pattern>/org/register</url-pattern>
+</servlet-mapping>
+
+<!-- Organization Login Servlet -->
+<servlet>
+    <servlet-name>OrgLoginServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OrgLoginServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OrgLoginServlet</servlet-name>
+    <url-pattern>/org/login</url-pattern>
+</servlet-mapping>
+
+<!-- Organization Dashboard Servlet -->
+<servlet>
+    <servlet-name>OrgDashboardServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OrgDashboardServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OrgDashboardServlet</servlet-name>
+    <url-pattern>/org/dashboard</url-pattern>
+</servlet-mapping>
+
+<!-- Organization Profile Servlet -->
+<servlet>
+    <servlet-name>OrgProfileServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OrgProfileServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OrgProfileServlet</servlet-name>
+    <url-pattern>/org/profile</url-pattern>
+</servlet-mapping>
+
 </web-app>

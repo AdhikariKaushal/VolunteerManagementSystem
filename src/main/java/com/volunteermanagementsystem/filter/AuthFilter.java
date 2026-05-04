@@ -1,5 +1,6 @@
 package com.volunteermanagementsystem.filter;
 
+import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -32,24 +33,35 @@ public class AuthFilter implements Filter {
 
         String requestURI  = req.getRequestURI();
         String contextPath = req.getContextPath();
+        String path = requestURI.substring(contextPath.length());
 
         // ── Allow public pages without login ──
         boolean isPublicPage =
-                requestURI.endsWith("login.jsp")                        ||
-                        requestURI.endsWith("index.jsp")                        ||
-                        requestURI.contains("/volunteer/register.jsp")          ||
-                        requestURI.contains("/organization/register.jsp")       ||
-                        requestURI.contains("/extra/about.jsp")                 ||
-                        requestURI.contains("/extra/contact.jsp")               ||
-                        requestURI.contains("/LoginServlet")                    ||
-                        requestURI.contains("/RegisterVolunteerServlet")        ||
-                        requestURI.contains("/RegisterOrganizationServlet")     ||
-                        requestURI.contains(".css")                             ||
-                        requestURI.contains(".js")                              ||
-                        requestURI.contains(".png")                             ||
-                        requestURI.contains(".jpg");
+                path.endsWith("/login.jsp")                          ||
+                        path.endsWith("/index.jsp")                          ||
+                        path.contains("/volunteer/register.jsp")             ||
+                        path.contains("/organization/register.jsp")           ||
+                        path.contains("/extra/about.jsp")                    ||
+                        path.contains("/extra/contact.jsp")                  ||
+                        path.equals("/LoginServlet")                         ||
+                        path.equals("/org/register")                         ||
+                        path.equals("/org/login")                            ||
+                        path.contains(".css")                                ||
+                        path.contains(".js")                                 ||
+                        path.contains(".png")                                ||
+                        path.contains(".jpg");
 
         if (isPublicPage) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Organization routes use organization session keys (not userId/role).
+        if (path.startsWith("/org/")) {
+            if (!SessionUtil.isOrgLoggedIn(req)) {
+                res.sendRedirect(contextPath + "/org/login");
+                return;
+            }
             chain.doFilter(request, response);
             return;
         }
@@ -66,7 +78,7 @@ public class AuthFilter implements Filter {
         // Admin trying to access volunteer or org pages
         if ("admin".equals(role) &&
                 (requestURI.contains("/volunteer/") || requestURI.contains("/organization/"))) {
-            res.sendRedirect(contextPath + "/views/admin/dashboard.jsp");
+            res.sendRedirect(contextPath + "/AdminServlet?action=dashboard");
             return;
         }
 

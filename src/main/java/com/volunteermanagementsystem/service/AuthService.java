@@ -31,7 +31,8 @@ public class AuthService {
         }
 
         // Step 3 — check if account is active
-        if (!user.getStatus().equals("active")) {
+        String status = user.getStatus() == null ? "" : user.getStatus().trim();
+        if (!status.equalsIgnoreCase("active")) {
             return null; // account pending or deactivated
         }
 

@@ -18,7 +18,7 @@ public class UserDAO {
      * Finds a user by their email address
      */
     public User getUserByEmail(String email) {
-        String sql = "SELECT * FROM users WHERE email = ?";
+        String sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();

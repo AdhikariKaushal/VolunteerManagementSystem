@@ -44,7 +44,13 @@ public class OrganizationService {
         org.setPhone(phone.trim());
         org.setAddress(address);
 
-        return orgDAO.register(org) ? null : "Registration failed. Please try again.";
+        if (orgDAO.register(org)) {
+            return null;
+        }
+        String daoError = orgDAO.getLastError();
+        return (daoError == null || daoError.trim().isEmpty())
+                ? "Registration failed. Please try again."
+                : "Registration failed: " + daoError;
     }
 
     /**
@@ -56,7 +62,8 @@ public class OrganizationService {
         Organization org = orgDAO.findByEmail(email.trim());
         if (org == null) return null;
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return null;
-        if (!"approved".equals(org.getStatus())) return null;
+        String status = org.getStatus() == null ? "" : org.getStatus().trim();
+        if (!"active".equalsIgnoreCase(status)) return null;
 
         return org;
     }
@@ -71,8 +78,9 @@ public class OrganizationService {
         Organization org = orgDAO.findByEmail(email.trim());
         if (org == null)                                        return "No account found with this email.";
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return "Incorrect password.";
-        if ("pending".equals(org.getStatus()))                 return "Your account is awaiting admin approval.";
-        if ("rejected".equals(org.getStatus()))                return "Your account has been rejected. Contact support.";
+        String status = org.getStatus() == null ? "" : org.getStatus().trim();
+        if ("pending".equalsIgnoreCase(status))                return "Your account is awaiting admin approval.";
+        if ("deactivated".equalsIgnoreCase(status))            return "Your account has been rejected or deactivated. Contact support.";
         return "Login failed. Please try again.";
     }
 

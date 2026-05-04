@@ -1,8 +1,10 @@
 package com.volunteermanagementsystem.service;
 
 import com.volunteermanagementsystem.dao.AdminDAO;
+import com.volunteermanagementsystem.dao.OrganizationDAO;
 import com.volunteermanagementsystem.dao.UserDAO;
 import com.volunteermanagementsystem.model.Admin;
+import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.model.User;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class AdminService {
 
     private UserDAO userDAO   = new UserDAO();
     private AdminDAO adminDAO = new AdminDAO();
+    private OrganizationDAO organizationDAO = new OrganizationDAO();
 
     /**
      * Returns admin profile by user ID
@@ -38,6 +41,10 @@ public class AdminService {
         return userDAO.getPendingUsers();
     }
 
+    public List<Organization> getPendingOrganizations() {
+        return organizationDAO.getPendingOrganizations();
+    }
+
     /**
      * Approves a user registration
      */
@@ -57,6 +64,14 @@ public class AdminService {
      */
     public boolean deactivateUser(int userId) {
         return userDAO.updateUserStatus(userId, "deactivated");
+    }
+
+    public boolean approveOrganization(int orgId) {
+        return organizationDAO.updateOrganizationStatus(orgId, "active");
+    }
+
+    public boolean rejectOrganization(int orgId) {
+        return organizationDAO.updateOrganizationStatus(orgId, "deactivated");
     }
 
     /**

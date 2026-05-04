@@ -1,5 +1,6 @@
 package com.volunteermanagementsystem.controller;
 
+import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.model.User;
 import com.volunteermanagementsystem.service.AdminService;
 import com.volunteermanagementsystem.util.SessionUtil;
@@ -38,12 +39,16 @@ public class AdminServlet extends HttpServlet {
             case "manageUsers":
                 List<User> allUsers = adminService.getAllUsers();
                 request.setAttribute("users", allUsers);
+                request.setAttribute("viewMode", "manageUsers");
                 request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
                 break;
 
             case "pendingUsers":
                 List<User> pendingUsers = adminService.getPendingUsers();
+                List<Organization> pendingOrganizations = adminService.getPendingOrganizations();
                 request.setAttribute("pendingUsers", pendingUsers);
+                request.setAttribute("pendingOrganizations", pendingOrganizations);
+                request.setAttribute("viewMode", "pendingUsers");
                 request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
                 break;
 
@@ -95,6 +100,20 @@ public class AdminServlet extends HttpServlet {
                 int userId = Integer.parseInt(request.getParameter("userId"));
                 adminService.deactivateUser(userId);
                 response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+deactivated+successfully");
+                break;
+            }
+
+            case "approveOrganization": {
+                int orgId = Integer.parseInt(request.getParameter("orgId"));
+                adminService.approveOrganization(orgId);
+                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=pendingUsers&message=Organization+approved+successfully");
+                break;
+            }
+
+            case "rejectOrganization": {
+                int orgId = Integer.parseInt(request.getParameter("orgId"));
+                adminService.rejectOrganization(orgId);
+                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=pendingUsers&message=Organization+rejected+successfully");
                 break;
             }
 
