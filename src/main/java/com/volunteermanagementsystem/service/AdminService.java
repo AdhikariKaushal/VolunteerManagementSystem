@@ -66,6 +66,13 @@ public class AdminService {
         return userDAO.updateUserStatus(userId, "deactivated");
     }
 
+    /**
+     * Reactivates a deactivated user account
+     */
+    public boolean activateUser(int userId) {
+        return userDAO.updateUserStatus(userId, "active");
+    }
+
     public boolean approveOrganization(int orgId) {
         return organizationDAO.updateOrganizationStatus(orgId, "active");
     }

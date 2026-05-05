@@ -118,7 +118,7 @@
     <div class="page-header">
         <h1><%= isPendingView ? "Pending Approvals" : "Manage Users" %></h1>
         <p class="page-subtitle">
-            <%= isPendingView ? "Review and approve pending registrations" : "View, approve, reject and deactivate user accounts" %>
+            <%= isPendingView ? "Review and approve pending registrations" : "View, approve, deactivate and reactivate user accounts" %>
         </p>
     </div>
 
@@ -228,6 +228,13 @@
                             <input type="hidden" name="action" value="approveUser"/>
                             <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
                             <button type="submit" class="btn btn-primary">✅ Approve</button>
+                        </form>
+                        <% } else if ("deactivated".equals(u.getStatus())) { %>
+                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="activateUser"/>
+                            <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="return confirm('Activate this user? They will be able to sign in again.')">✅ Activate</button>
                         </form>
                         <% } else { %>
                         <span style="color:#999; font-size:13px;">No actions</span>

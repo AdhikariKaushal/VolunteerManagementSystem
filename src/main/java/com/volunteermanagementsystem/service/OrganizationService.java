@@ -56,7 +56,11 @@ public class OrganizationService {
         Organization org = orgDAO.findByEmail(email.trim());
         if (org == null) return null;
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return null;
-        if (!"approved".equals(org.getStatus())) return null;
+        // Admin approval sets status to "active" (see AdminService.approveOrganization)
+        String st = org.getStatus();
+        if (st == null || !("active".equalsIgnoreCase(st) || "approved".equalsIgnoreCase(st))) {
+            return null;
+        }
 
         return org;
     }
@@ -71,8 +75,9 @@ public class OrganizationService {
         Organization org = orgDAO.findByEmail(email.trim());
         if (org == null)                                        return "No account found with this email.";
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return "Incorrect password.";
-        if ("pending".equals(org.getStatus()))                 return "Your account is awaiting admin approval.";
-        if ("rejected".equals(org.getStatus()))                return "Your account has been rejected. Contact support.";
+        String st = org.getStatus();
+        if (st != null && "pending".equalsIgnoreCase(st))      return "Your account is awaiting admin approval.";
+        if (st != null && "deactivated".equalsIgnoreCase(st))  return "Your organisation account is inactive. Contact support.";
         return "Login failed. Please try again.";
     }
 

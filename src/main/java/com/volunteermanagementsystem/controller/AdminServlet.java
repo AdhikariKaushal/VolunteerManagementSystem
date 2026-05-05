@@ -103,6 +103,13 @@ public class AdminServlet extends HttpServlet {
                 break;
             }
 
+            case "activateUser": {
+                int userId = Integer.parseInt(request.getParameter("userId"));
+                adminService.activateUser(userId);
+                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+activated+successfully");
+                break;
+            }
+
             case "approveOrganization": {
                 int orgId = Integer.parseInt(request.getParameter("orgId"));
                 adminService.approveOrganization(orgId);

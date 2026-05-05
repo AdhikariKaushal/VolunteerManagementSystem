@@ -158,6 +158,12 @@
                 <button type="submit" class="btn-login">Sign In</button>
             </form>
 
+            <p class="login-subtitle" style="margin-top:12px; font-size:13px;">
+                Organisation account?
+                <a href="${pageContext.request.contextPath}/org/login" style="color:#1a6b3c; font-weight:600;">Sign in here</a>
+                (not the same as volunteer/admin login).
+            </p>
+
             <div class="login-divider"><span>New to VolunteerBridge?</span></div>
 
             <div class="register-links">
