@@ -85,6 +85,18 @@
                 </configuration>
             </plugin>
 
+            <!-- ✅ Jetty plugin — run the app on port 8082 -->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>11.0.20</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8082</port>
+                    </httpConnector>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

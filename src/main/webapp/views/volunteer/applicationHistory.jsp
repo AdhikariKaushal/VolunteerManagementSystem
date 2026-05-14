@@ -1,4 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.volunteermanagementsystem.dao.VolunteerDAO" %>
+<%@ page import="com.volunteermanagementsystem.model.Volunteer" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%
+    Integer userId = (Integer) session.getAttribute("userId");
+    if (userId == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+    VolunteerDAO volunteerDAO = new VolunteerDAO();
+    Volunteer volunteer = volunteerDAO.getVolunteerByUserId(userId);
+    List<Object[]> applications = null;
+    if(volunteer != null) {
+        applications = volunteerDAO.getApplicationHistory(volunteer.getId());
+    }
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,27 +76,31 @@
                 </tr>
             </thead>
             <tbody>
+                <% if (applications != null && !applications.isEmpty()) { 
+                       for (Object[] app : applications) { 
+                           String title = (String) app[1];
+                           String orgName = (String) app[2];
+                           String status = (String) app[3];
+                           java.sql.Timestamp appliedAt = (java.sql.Timestamp) app[4];
+                           
+                           String statusClass = "";
+                           if ("APPROVED".equalsIgnoreCase(status)) statusClass = "status-approved";
+                           else if ("REJECTED".equalsIgnoreCase(status)) statusClass = "status-rejected";
+                           else statusClass = "status-pending";
+                %>
                 <tr>
-                    <td><strong>Community Park Cleanup</strong></td>
-                    <td>Green Earth Initiative</td>
-                    <td>May 01, 2026</td>
-                    <td><span class="status-badge status-approved">Approved</span></td>
+                    <td><strong><%= title %></strong></td>
+                    <td><%= orgName %></td>
+                    <td><%= sdf.format(appliedAt) %></td>
+                    <td><span class="status-badge <%= statusClass %>"><%= status %></span></td>
                     <td><a href="#" class="btn-view-all">View Details</a></td>
                 </tr>
+                <%     }
+                   } else { %>
                 <tr>
-                    <td><strong>Weekend Math Tutoring</strong></td>
-                    <td>Bright Future Kids</td>
-                    <td>May 02, 2026</td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
-                    <td><a href="#" class="btn-view-all">View Details</a></td>
+                    <td colspan="5" style="text-align:center;">No applications found.</td>
                 </tr>
-                <tr>
-                    <td><strong>Web Developer Mentor</strong></td>
-                    <td>Code for All Nepal</td>
-                    <td>Apr 28, 2026</td>
-                    <td><span class="status-badge status-rejected">Rejected</span></td>
-                    <td><a href="#" class="btn-view-all">View Details</a></td>
-                </tr>
+                <% } %>
             </tbody>
         </table>
 
