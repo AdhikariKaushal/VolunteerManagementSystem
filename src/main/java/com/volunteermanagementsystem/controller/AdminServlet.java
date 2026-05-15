@@ -121,6 +121,18 @@ public class AdminServlet extends HttpServlet {
                 break;
             }
 
+            case "deleteUser": {
+                int userId = Integer.parseInt(request.getParameter("userId"));
+                int adminId = SessionUtil.getUserId(request);
+                String deleteError = adminService.deleteUser(userId, adminId);
+                if (deleteError != null) {
+                    redirectManageUsers(response, request, "error", deleteError);
+                } else {
+                    redirectManageUsers(response, request, "message", "User deleted permanently.");
+                }
+                break;
+            }
+
             case "approveOrganization": {
                 int orgId = Integer.parseInt(request.getParameter("orgId"));
                 adminService.approveOrganization(orgId);

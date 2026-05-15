@@ -113,6 +113,35 @@ public class AdminService {
     }
 
     /**
+     * Permanently deletes a volunteer or organisation account and related data.
+     * @return null on success, or an error message on failure
+     */
+    public String deleteUser(int userId, int actingAdminId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be deleted.";
+        }
+        if (actingAdminId == userId) {
+            return "You cannot delete your own account.";
+        }
+        String role = target.getRole() == null ? "" : target.getRole().trim();
+        if (!"volunteer".equalsIgnoreCase(role) && !"organization".equalsIgnoreCase(role)) {
+            return "Only volunteer and organisation accounts can be deleted.";
+        }
+        if (userDAO.deleteUserCascade(userId)) {
+            return null;
+        }
+        String detail = userDAO.getLastDeleteError();
+        if (detail != null && !detail.isEmpty()) {
+            return "Failed to delete user: " + detail;
+        }
+        return "Failed to delete user. Please try again.";
+    }
+
+    /**
      * Returns summary report counts for admin dashboard
      */
     public int getTotalVolunteers() {

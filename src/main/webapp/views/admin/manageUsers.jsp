@@ -101,6 +101,24 @@
         .btn-danger:hover { background: #8c2626; }
         .btn-warning { background: #ba7517; color: #fff; }
         .btn-warning:hover { background: #a06312; }
+
+        .action-cell { min-width: 200px; vertical-align: middle; }
+        .action-bar {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+        }
+        .action-cell form {
+            display: inline-flex;
+            margin: 0;
+        }
+        .action-cell .btn {
+            margin: 0;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -222,30 +240,36 @@
                         </span>
                     </td>
                     <td><%= u.getCreatedAt() %></td>
-                    <td>
-                        <% if ("active".equals(u.getStatus())) { %>
-                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="deactivateUser"/>
-                            <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
-                            <button type="submit" class="btn btn-warning"
-                                    onclick="return confirm('Deactivate <%= u.getEmail() %>? They will be signed out and cannot log in until reactivated.')">🚫 Deactivate</button>
-                        </form>
-                        <% } else if ("pending".equals(u.getStatus())) { %>
-                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="approveUser"/>
-                            <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
-                            <button type="submit" class="btn btn-primary">✅ Approve</button>
-                        </form>
-                        <% } else if ("deactivated".equals(u.getStatus())) { %>
-                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="activateUser"/>
-                            <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
-                            <button type="submit" class="btn btn-primary"
-                                    onclick="return confirm('Activate this user? They will be able to sign in again.')">✅ Activate</button>
-                        </form>
-                        <% } else { %>
-                        <span style="color:#999; font-size:13px;">No actions</span>
-                        <% } %>
+                    <td class="action-cell">
+                        <div class="action-bar">
+                            <% if ("active".equals(u.getStatus())) { %>
+                                    <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
+                                        <input type="hidden" name="action" value="deactivateUser"/>
+                                        <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
+                                        <button type="submit" class="btn btn-warning"
+                                                onclick="return confirm('Deactivate <%= u.getEmail() %>? They will be signed out and cannot log in until reactivated.')">Deactivate</button>
+                                    </form>
+                                    <% } else if ("pending".equals(u.getStatus())) { %>
+                                    <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
+                                        <input type="hidden" name="action" value="approveUser"/>
+                                        <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
+                                        <button type="submit" class="btn btn-primary">Approve</button>
+                                    </form>
+                                    <% } else if ("deactivated".equals(u.getStatus())) { %>
+                                    <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
+                                        <input type="hidden" name="action" value="activateUser"/>
+                                        <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
+                                        <button type="submit" class="btn btn-primary"
+                                                onclick="return confirm('Activate <%= u.getEmail() %>? They will be able to sign in again.')">Activate</button>
+                                    </form>
+                            <% } %>
+                            <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
+                                    <input type="hidden" name="action" value="deleteUser"/>
+                                    <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
+                                    <button type="submit" class="btn btn-danger"
+                                            onclick="return confirm('Permanently delete <%= u.getEmail() %> (<%= u.getRole() %>)? This cannot be undone.')">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <% } } else { %>
