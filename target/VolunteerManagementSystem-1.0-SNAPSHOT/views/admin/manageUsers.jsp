@@ -57,6 +57,10 @@
             background: #e8f5ee; color: #085041; border: 1px solid #b7dfca;
             padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;
         }
+        .alert-error {
+            background: #fde8e8; color: #a32d2d; border: 1px solid #f5c6cb;
+            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;
+        }
 
         .table-card {
             background: #fff; border-radius: 14px;
@@ -124,6 +128,9 @@
 
     <% if (request.getParameter("message") != null) { %>
     <div class="alert-success"><%= request.getParameter("message") %></div>
+    <% } %>
+    <% if (request.getParameter("error") != null) { %>
+    <div class="alert-error"><%= request.getParameter("error") %></div>
     <% } %>
 
     <% if (hasPendingOrganizations) { %>
@@ -221,7 +228,7 @@
                             <input type="hidden" name="action" value="deactivateUser"/>
                             <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
                             <button type="submit" class="btn btn-warning"
-                                    onclick="return confirm('Deactivate this user?')">🚫 Deactivate</button>
+                                    onclick="return confirm('Deactivate <%= u.getEmail() %>? They will be signed out and cannot log in until reactivated.')">🚫 Deactivate</button>
                         </form>
                         <% } else if ("pending".equals(u.getStatus())) { %>
                         <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">

@@ -138,6 +138,9 @@
             <% if (request.getAttribute("error") != null) { %>
             <div class="alert alert-error"><%= request.getAttribute("error") %></div>
             <% } %>
+            <% if ("1".equals(request.getParameter("inactive"))) { %>
+            <div class="alert alert-error">Your session ended because this account is no longer active. Contact support if you need access restored.</div>
+            <% } %>
             <% if (request.getParameter("message") != null) { %>
             <div class="alert alert-success"><%= request.getParameter("message") %></div>
             <% } %>
@@ -147,7 +150,8 @@
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email"
                            placeholder="Enter your email"
-                           value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>"
+                           value="<%= request.getAttribute("email") != null ? request.getAttribute("email") :
+                                    request.getParameter("email") != null ? request.getParameter("email") : "" %>"
                            required/>
                 </div>
                 <div class="form-group">

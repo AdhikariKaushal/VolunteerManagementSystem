@@ -8,6 +8,8 @@ import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class AdminServlet extends HttpServlet {
@@ -98,15 +100,24 @@ public class AdminServlet extends HttpServlet {
 
             case "deactivateUser": {
                 int userId = Integer.parseInt(request.getParameter("userId"));
-                adminService.deactivateUser(userId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+deactivated+successfully");
+                int adminId = SessionUtil.getUserId(request);
+                String deactivateError = adminService.deactivateUser(userId, adminId);
+                if (deactivateError != null) {
+                    redirectManageUsers(response, request, "error", deactivateError);
+                } else {
+                    redirectManageUsers(response, request, "message", "User deactivated successfully. They can no longer sign in.");
+                }
                 break;
             }
 
             case "activateUser": {
                 int userId = Integer.parseInt(request.getParameter("userId"));
-                adminService.activateUser(userId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+activated+successfully");
+                String activateError = adminService.activateUser(userId);
+                if (activateError != null) {
+                    redirectManageUsers(response, request, "error", activateError);
+                } else {
+                    redirectManageUsers(response, request, "message", "User activated successfully. They can sign in again.");
+                }
                 break;
             }
 
@@ -127,5 +138,12 @@ public class AdminServlet extends HttpServlet {
             default:
                 response.sendRedirect(request.getContextPath() + "/AdminServlet?action=dashboard");
         }
+    }
+
+    private void redirectManageUsers(HttpServletResponse response, HttpServletRequest request,
+                                     String param, String text) throws IOException {
+        String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        response.sendRedirect(request.getContextPath()
+                + "/AdminServlet?action=manageUsers&" + param + "=" + encoded);
     }
 }

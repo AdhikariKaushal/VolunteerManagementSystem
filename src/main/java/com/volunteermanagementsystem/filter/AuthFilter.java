@@ -1,5 +1,9 @@
 package com.volunteermanagementsystem.filter;
 
+import com.volunteermanagementsystem.dao.OrganizationDAO;
+import com.volunteermanagementsystem.dao.UserDAO;
+import com.volunteermanagementsystem.model.Organization;
+import com.volunteermanagementsystem.model.User;
 import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -19,6 +23,9 @@ import java.io.IOException;
  * Group: The GOAT
  */
 public class AuthFilter implements Filter {
+
+    private final UserDAO userDAO = new UserDAO();
+    private final OrganizationDAO organizationDAO = new OrganizationDAO();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
@@ -62,6 +69,12 @@ public class AuthFilter implements Filter {
                 res.sendRedirect(contextPath + "/org/login");
                 return;
             }
+            Organization org = organizationDAO.findById(SessionUtil.getOrgId(req));
+            if (org == null || !isActiveStatus(org.getStatus())) {
+                SessionUtil.invalidate(req);
+                res.sendRedirect(contextPath + "/org/login?inactive=1");
+                return;
+            }
             chain.doFilter(request, response);
             return;
         }
@@ -69,6 +82,15 @@ public class AuthFilter implements Filter {
         // ── If not logged in → redirect to login ──
         if (session == null || session.getAttribute("userId") == null) {
             res.sendRedirect(contextPath + "/login.jsp");
+            return;
+        }
+
+        // ── Deactivated while logged in → end session immediately ──
+        int userId = SessionUtil.getUserId(req);
+        User currentUser = userDAO.getUserById(userId);
+        if (currentUser == null || !isActiveStatus(currentUser.getStatus())) {
+            SessionUtil.destroySession(req);
+            res.sendRedirect(contextPath + "/login.jsp?inactive=1");
             return;
         }
 
@@ -98,6 +120,10 @@ public class AuthFilter implements Filter {
 
         // ── All checks passed → allow through ──
         chain.doFilter(request, response);
+    }
+
+    private static boolean isActiveStatus(String status) {
+        return status != null && "active".equalsIgnoreCase(status.trim());
     }
 
     @Override

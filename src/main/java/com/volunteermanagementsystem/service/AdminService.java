@@ -60,17 +60,48 @@ public class AdminService {
     }
 
     /**
-     * Deactivates an active user account
+     * Deactivates an active user account.
+     * @return null on success, or an error message on failure
      */
-    public boolean deactivateUser(int userId) {
-        return userDAO.updateUserStatus(userId, "deactivated");
+    public String deactivateUser(int userId, int actingAdminId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be deactivated.";
+        }
+        if (actingAdminId == userId) {
+            return "You cannot deactivate your own account.";
+        }
+        String status = target.getStatus() == null ? "" : target.getStatus().trim();
+        if (!"active".equalsIgnoreCase(status)) {
+            return "Only active accounts can be deactivated.";
+        }
+        return userDAO.updateUserStatus(userId, "deactivated")
+                ? null
+                : "Failed to deactivate user. Please try again.";
     }
 
     /**
-     * Reactivates a deactivated user account
+     * Reactivates a deactivated user account.
+     * @return null on success, or an error message on failure
      */
-    public boolean activateUser(int userId) {
-        return userDAO.updateUserStatus(userId, "active");
+    public String activateUser(int userId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be changed from this screen.";
+        }
+        String status = target.getStatus() == null ? "" : target.getStatus().trim();
+        if (!"deactivated".equalsIgnoreCase(status)) {
+            return "Only deactivated accounts can be reactivated.";
+        }
+        return userDAO.updateUserStatus(userId, "active")
+                ? null
+                : "Failed to activate user. Please try again.";
     }
 
     public boolean approveOrganization(int orgId) {

@@ -40,6 +40,35 @@ public class AuthService {
     }
 
     /**
+     * Returns a specific login error message (wrong password, pending, deactivated, etc.)
+     */
+    public String getLoginError(String email, String password) {
+        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            return "Email and password are required.";
+        }
+
+        User user = userDAO.getUserByEmail(email.trim());
+        if (user == null) {
+            return "No account found with this email.";
+        }
+        if (!PasswordUtil.verifyPassword(password, user.getPassword())) {
+            return "Incorrect password.";
+        }
+
+        String status = user.getStatus() == null ? "" : user.getStatus().trim();
+        if ("pending".equalsIgnoreCase(status)) {
+            return "Your account is awaiting admin approval.";
+        }
+        if ("deactivated".equalsIgnoreCase(status)) {
+            return "Your account has been deactivated. Contact support if you need access restored.";
+        }
+        if (!"active".equalsIgnoreCase(status)) {
+            return "Your account is not active. Contact support.";
+        }
+        return "Login failed. Please try again.";
+    }
+
+    /**
      * Checks if an email is already registered
      * Used during registration to prevent duplicates
      */
