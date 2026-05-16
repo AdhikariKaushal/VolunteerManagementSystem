@@ -254,20 +254,14 @@
     <!-- All Users -->
     <% if (!isPendingView) { %>
     <div class="table-card">
-        <div class="table-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <div>
-                <% String titleRoleFilter = request.getParameter("role"); %>
-                <h2>👥 <%= (titleRoleFilter != null && !titleRoleFilter.trim().isEmpty()) ? 
-                        (titleRoleFilter.substring(0, 1).toUpperCase() + titleRoleFilter.substring(1).toLowerCase() + "s") : "All Users" %>
-                </h2>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="userSearchInput" placeholder="Search by name or email..." style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; width: 280px; outline: none; transition: border-color 0.2s;" onkeyup="if(event.key === 'Enter') filterUsersTable()">
-                <button type="button" class="btn btn-primary" onclick="filterUsersTable()" style="margin: 0; padding: 8px 16px;">Search</button>
-            </div>
+        <div class="table-card-header">
+            <% String titleRoleFilter = request.getParameter("role"); %>
+            <h2>👥 <%= (titleRoleFilter != null && !titleRoleFilter.trim().isEmpty()) ? 
+                    (titleRoleFilter.substring(0, 1).toUpperCase() + titleRoleFilter.substring(1).toLowerCase() + "s") : "All Users" %>
+            </h2>
         </div>
         <div class="table-wrapper">
-            <table id="usersTable">
+            <table>
                 <thead>
                 <tr>
                     <th>#</th><th>Email</th><th>Role</th>
@@ -335,49 +329,6 @@
     </div>
     <% } %>
 </main>
-
-<script>
-    function filterUsersTable() {
-        var input = document.getElementById("userSearchInput");
-        if (!input) return;
-        var filter = input.value.toLowerCase();
-        var table = document.getElementById("usersTable");
-        if (!table) return;
-        var tr = table.getElementsByTagName("tr");
-        
-        for (var i = 1; i < tr.length; i++) {
-            var matchFound = false;
-            var tds = tr[i].getElementsByTagName("td");
-            
-            // Skip the "No users found" row if present
-            if (tds.length === 1 && tds[0].colSpan > 1) continue;
-            
-            // Search through relevant columns (e.g., Email, Role)
-            for (var j = 1; j < tds.length - 1; j++) { 
-                if (tds[j]) {
-                    var txtValue = tds[j].textContent || tds[j].innerText;
-                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                        matchFound = true;
-                        break;
-                    }
-                }
-            }
-            if (matchFound) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        }
-    }
-
-    // Add real-time filtering as user types
-    document.addEventListener('DOMContentLoaded', function() {
-        var searchInput = document.getElementById('userSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', filterUsersTable);
-        }
-    });
-</script>
 
 </body>
 </html>
