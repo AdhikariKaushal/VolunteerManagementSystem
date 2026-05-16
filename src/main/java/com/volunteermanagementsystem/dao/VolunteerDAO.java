@@ -22,21 +22,18 @@ public class VolunteerDAO {
      * Returns the generated volunteer ID, or -1 on failure.
      */
     public int registerVolunteer(Volunteer v) throws SQLException {
-        String sql = "INSERT INTO volunteers (user_id, full_name, email, phone, address, " +
-                "skills, date_of_birth, gender, bio, total_hours) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+        String sql = "INSERT INTO volunteers (user_id, full_name, phone, address, " +
+                "skills, date_of_birth, total_hours) " +
+                "VALUES (?, ?, ?, ?, ?, ?, 0)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, v.getUserId());
             ps.setString(2, v.getFullName());
-            ps.setString(3, v.getEmail());
-            ps.setString(4, v.getPhone());
-            ps.setString(5, v.getAddress());
-            ps.setString(6, v.getSkills());
-            ps.setDate(7, v.getDateOfBirth() != null ? Date.valueOf(v.getDateOfBirth()) : null);
-            ps.setString(8, v.getGender());
-            ps.setString(9, v.getBio());
+            ps.setString(3, v.getPhone());
+            ps.setString(4, v.getAddress());
+            ps.setString(5, v.getSkills());
+            ps.setDate(6, v.getDateOfBirth() != null ? Date.valueOf(v.getDateOfBirth()) : null);
 
             int rows = ps.executeUpdate();
             if (rows > 0) {
