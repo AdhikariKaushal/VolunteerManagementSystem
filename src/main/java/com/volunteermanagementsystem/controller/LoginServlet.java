@@ -8,7 +8,6 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
-
 public class LoginServlet extends HttpServlet {
 
     private AuthService authService = new AuthService();
