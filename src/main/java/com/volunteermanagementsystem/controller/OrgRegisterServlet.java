@@ -30,13 +30,12 @@ public class OrgRegisterServlet extends HttpServlet {
         String confirmPassword = req.getParameter("confirmPassword");
         String orgType         = req.getParameter("orgType");
         String description     = req.getParameter("description");
-        String website         = req.getParameter("website");
         String phone           = req.getParameter("phone");
         String address         = req.getParameter("address");
 
         String error = orgService.register(
                 orgName, email, password, confirmPassword,
-                orgType, description, website, phone, address);
+                orgType, description, phone, address);
 
         if (error != null) {
             req.setAttribute("error", error);
@@ -44,7 +43,6 @@ public class OrgRegisterServlet extends HttpServlet {
             req.setAttribute("email", email);
             req.setAttribute("orgType", orgType);
             req.setAttribute("description", description);
-            req.setAttribute("website", website);
             req.setAttribute("phone", phone);
             req.setAttribute("address", address);
             req.getRequestDispatcher("/views/organization/register.jsp").forward(req, resp);

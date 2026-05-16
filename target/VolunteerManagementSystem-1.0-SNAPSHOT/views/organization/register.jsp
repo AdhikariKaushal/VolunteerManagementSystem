@@ -53,10 +53,7 @@
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="3" placeholder="Briefly describe your organisation">${description}</textarea>
             </div>
-            <div class="form-group">
-                <label for="website">Website</label>
-                <input type="text" id="website" name="website" value="${website}" placeholder="https://yourorg.org">
-            </div>
+
             <div class="form-group">
                 <label for="address">Address</label>
                 <input type="text" id="address" name="address" value="${address}" placeholder="City, Country">

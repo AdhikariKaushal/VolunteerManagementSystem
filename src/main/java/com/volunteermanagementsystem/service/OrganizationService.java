@@ -17,8 +17,7 @@ public class OrganizationService {
      */
     public String register(String orgName, String email, String password,
                            String confirmPassword, String orgType,
-                           String description, String website,
-                           String phone, String address) {
+                           String description, String phone, String address) {
 
         if (ValidationUtil.isEmpty(orgName))           return "Organisation name is required.";
         if (!ValidationUtil.isAlphaOnly(orgName))      return "Organisation name must contain letters only.";
@@ -40,7 +39,6 @@ public class OrganizationService {
         org.setPassword(PasswordUtil.hashPassword(password));
         org.setOrgType(orgType.trim());
         org.setDescription(description);
-        org.setWebsite(website);
         org.setPhone(phone.trim());
         org.setAddress(address);
 
@@ -104,7 +102,6 @@ public class OrganizationService {
         org.setOrgName(orgName.trim());
         org.setOrgType(orgType);
         org.setDescription(description);
-        org.setWebsite(website);
         org.setPhone(phone.trim());
         org.setAddress(address);
 
