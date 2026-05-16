@@ -64,7 +64,7 @@ public class VolunteerDAO {
 
     /** Get volunteer profile by volunteer primary key */
     public Volunteer getVolunteerById(int volunteerId) throws SQLException {
-        String sql = "SELECT * FROM volunteers WHERE id = ?";
+        String sql = "SELECT * FROM volunteers WHERE volunteer_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

@@ -29,10 +29,12 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Step 2 — authenticate
-        User user = authService.login(email.trim(), password.trim());
+        String trimmedEmail = email.trim();
+        User user = authService.login(trimmedEmail, password.trim());
 
         if (user == null) {
-            request.setAttribute("error", "Invalid email or password. Please try again.");
+            request.setAttribute("error", authService.getLoginError(trimmedEmail, password.trim()));
+            request.setAttribute("email", trimmedEmail);
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
@@ -44,7 +46,7 @@ public class LoginServlet extends HttpServlet {
         String contextPath = request.getContextPath();
         switch (user.getRole()) {
             case "admin":
-                response.sendRedirect(contextPath + "/views/admin/dashboard.jsp");
+                response.sendRedirect(contextPath + "/AdminServlet?action=dashboard");
                 break;
             case "volunteer":
                 response.sendRedirect(contextPath + "/views/volunteer/dashboard.jsp");
@@ -65,7 +67,7 @@ public class LoginServlet extends HttpServlet {
             String role = SessionUtil.getUserRole(request);
             String contextPath = request.getContextPath();
             switch (role) {
-                case "admin":        response.sendRedirect(contextPath + "/views/admin/dashboard.jsp"); break;
+                case "admin":        response.sendRedirect(contextPath + "/AdminServlet?action=dashboard"); break;
                 case "volunteer":    response.sendRedirect(contextPath + "/views/volunteer/dashboard.jsp"); break;
                 case "organization": response.sendRedirect(contextPath + "/views/organization/dashboard.jsp"); break;
                 default:             response.sendRedirect(contextPath + "/login.jsp");

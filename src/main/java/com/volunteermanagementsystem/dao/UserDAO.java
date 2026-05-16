@@ -18,7 +18,7 @@ public class UserDAO {
      * Finds a user by their email address
      */
     public User getUserByEmail(String email) {
-        String sql = "SELECT * FROM users WHERE email = ?";
+        String sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
@@ -169,6 +169,170 @@ public class UserDAO {
             DBConnection.closeConnection(conn);
         }
         return false;
+    }
+
+    /**
+     * Permanently deletes a volunteer or organisation user and related records.
+     * Must not be used for admin accounts.
+     */
+    private String lastDeleteError;
+
+    public String getLastDeleteError() {
+        return lastDeleteError;
+    }
+
+    public boolean deleteUserCascade(int userId) {
+        lastDeleteError = null;
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            execute(conn, "SET FOREIGN_KEY_CHECKS=0");
+
+            User user = getUserById(conn, userId);
+            if (user == null) {
+                lastDeleteError = "User not found.";
+                conn.rollback();
+                return false;
+            }
+
+            String role = user.getRole() == null ? "" : user.getRole().trim();
+            if ("volunteer".equalsIgnoreCase(role)) {
+                deleteVolunteerRecords(conn, userId);
+            } else if ("organization".equalsIgnoreCase(role)) {
+                deleteOrganizationRecords(conn, userId);
+            } else {
+                lastDeleteError = "Unsupported account type.";
+                conn.rollback();
+                return false;
+            }
+
+            execute(conn, "SET FOREIGN_KEY_CHECKS=1");
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            lastDeleteError = e.getMessage();
+            System.err.println("Error deleting user cascade: " + e.getMessage());
+            if (conn != null) {
+                try {
+                    execute(conn, "SET FOREIGN_KEY_CHECKS=1");
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    System.err.println("Rollback failed: " + rollbackEx.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ignored) {}
+                DBConnection.closeConnection(conn);
+            }
+        }
+    }
+
+    private User getUserById(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Integer findVolunteerPrimaryKey(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT * FROM volunteers WHERE user_id = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                ResultSetMetaData meta = rs.getMetaData();
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    String col = meta.getColumnLabel(i);
+                    if ("volunteer_id".equalsIgnoreCase(col) || "id".equalsIgnoreCase(col)) {
+                        return rs.getInt(i);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void deleteVolunteerRecords(Connection conn, int userId) throws SQLException {
+        Integer volunteerId = findVolunteerPrimaryKey(conn, userId);
+
+        if (volunteerId != null) {
+            executeUpdateSafe(conn, "DELETE FROM wishlist WHERE volunteer_id = ?", volunteerId);
+            executeUpdateSafe(conn, "DELETE FROM attendance WHERE volunteer_id = ?", volunteerId);
+            executeUpdateSafe(conn, "DELETE FROM applications WHERE volunteer_id = ?", volunteerId);
+            executeUpdateSafe(conn, "DELETE FROM application WHERE vol_id = ?", volunteerId);
+        }
+
+        executeUpdate(conn, "DELETE FROM volunteers WHERE user_id = ?", userId);
+        executeUpdate(conn, "DELETE FROM users WHERE user_id = ?", userId);
+    }
+
+    private void deleteOrganizationRecords(Connection conn, int userId) throws SQLException {
+        Integer orgId = null;
+        String findSql = "SELECT org_id FROM organizations WHERE user_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(findSql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    orgId = rs.getInt("org_id");
+                }
+            }
+        }
+
+        if (orgId != null) {
+            executeUpdateSafe(conn,
+                    "DELETE a FROM application a " +
+                    "INNER JOIN opportunity o ON a.opp_id = o.opp_id " +
+                    "WHERE o.org_id = ?", orgId);
+            executeUpdateSafe(conn, "DELETE FROM opportunity WHERE org_id = ?", orgId);
+            executeUpdateSafe(conn,
+                    "DELETE FROM applications WHERE opportunity_id IN " +
+                    "(SELECT id FROM opportunities WHERE organization_id = ?)", orgId);
+            executeUpdateSafe(conn, "DELETE FROM opportunities WHERE organization_id = ?", orgId);
+        }
+
+        executeUpdate(conn, "DELETE FROM organizations WHERE user_id = ?", userId);
+        if (orgId != null) {
+            executeUpdateSafe(conn, "DELETE FROM organization WHERE org_id = ?", orgId);
+        }
+        executeUpdate(conn, "DELETE FROM users WHERE user_id = ?", userId);
+    }
+
+    private void execute(Connection conn, String sql) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.execute();
+        }
+    }
+
+    private void executeUpdate(Connection conn, String sql, int param) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, param);
+            ps.executeUpdate();
+        }
+    }
+
+    private void executeUpdateSafe(Connection conn, String sql, int param) {
+        try {
+            executeUpdate(conn, sql, param);
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1146 || e.getErrorCode() == 1054) {
+                System.err.println("Skipping optional delete: " + e.getMessage());
+            } else {
+                System.err.println("Optional delete failed: " + e.getMessage());
+            }
+        }
     }
 
     /**

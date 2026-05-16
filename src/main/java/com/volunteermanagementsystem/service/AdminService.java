@@ -1,8 +1,10 @@
 package com.volunteermanagementsystem.service;
 
 import com.volunteermanagementsystem.dao.AdminDAO;
+import com.volunteermanagementsystem.dao.OrganizationDAO;
 import com.volunteermanagementsystem.dao.UserDAO;
 import com.volunteermanagementsystem.model.Admin;
+import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.model.User;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class AdminService {
 
     private UserDAO userDAO   = new UserDAO();
     private AdminDAO adminDAO = new AdminDAO();
+    private OrganizationDAO organizationDAO = new OrganizationDAO();
 
     /**
      * Returns admin profile by user ID
@@ -38,6 +41,10 @@ public class AdminService {
         return userDAO.getPendingUsers();
     }
 
+    public List<Organization> getPendingOrganizations() {
+        return organizationDAO.getPendingOrganizations();
+    }
+
     /**
      * Approves a user registration
      */
@@ -53,10 +60,85 @@ public class AdminService {
     }
 
     /**
-     * Deactivates an active user account
+     * Deactivates an active user account.
+     * @return null on success, or an error message on failure
      */
-    public boolean deactivateUser(int userId) {
-        return userDAO.updateUserStatus(userId, "deactivated");
+    public String deactivateUser(int userId, int actingAdminId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be deactivated.";
+        }
+        if (actingAdminId == userId) {
+            return "You cannot deactivate your own account.";
+        }
+        String status = target.getStatus() == null ? "" : target.getStatus().trim();
+        if (!"active".equalsIgnoreCase(status)) {
+            return "Only active accounts can be deactivated.";
+        }
+        return userDAO.updateUserStatus(userId, "deactivated")
+                ? null
+                : "Failed to deactivate user. Please try again.";
+    }
+
+    /**
+     * Reactivates a deactivated user account.
+     * @return null on success, or an error message on failure
+     */
+    public String activateUser(int userId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be changed from this screen.";
+        }
+        String status = target.getStatus() == null ? "" : target.getStatus().trim();
+        if (!"deactivated".equalsIgnoreCase(status)) {
+            return "Only deactivated accounts can be reactivated.";
+        }
+        return userDAO.updateUserStatus(userId, "active")
+                ? null
+                : "Failed to activate user. Please try again.";
+    }
+
+    public boolean approveOrganization(int orgId) {
+        return organizationDAO.updateOrganizationStatus(orgId, "active");
+    }
+
+    public boolean rejectOrganization(int orgId) {
+        return organizationDAO.updateOrganizationStatus(orgId, "deactivated");
+    }
+
+    /**
+     * Permanently deletes a volunteer or organisation account and related data.
+     * @return null on success, or an error message on failure
+     */
+    public String deleteUser(int userId, int actingAdminId) {
+        User target = userDAO.getUserById(userId);
+        if (target == null) {
+            return "User not found.";
+        }
+        if ("admin".equalsIgnoreCase(target.getRole())) {
+            return "Admin accounts cannot be deleted.";
+        }
+        if (actingAdminId == userId) {
+            return "You cannot delete your own account.";
+        }
+        String role = target.getRole() == null ? "" : target.getRole().trim();
+        if (!"volunteer".equalsIgnoreCase(role) && !"organization".equalsIgnoreCase(role)) {
+            return "Only volunteer and organisation accounts can be deleted.";
+        }
+        if (userDAO.deleteUserCascade(userId)) {
+            return null;
+        }
+        String detail = userDAO.getLastDeleteError();
+        if (detail != null && !detail.isEmpty()) {
+            return "Failed to delete user: " + detail;
+        }
+        return "Failed to delete user. Please try again.";
     }
 
     /**
