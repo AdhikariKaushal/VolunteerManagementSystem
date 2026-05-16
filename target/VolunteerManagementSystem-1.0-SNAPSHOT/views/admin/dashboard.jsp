@@ -57,6 +57,11 @@
             background: #fff; border-radius: 14px; padding: 24px;
             display: flex; align-items: center; gap: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        a.stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .stat-green  { border-left-color: #1a6b3c; }
         .stat-blue   { border-left-color: #185fa5; }
@@ -112,14 +117,14 @@
     <% } %>
 
     <div class="stats-grid">
-        <div class="stat-card stat-green">
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=volunteer" class="stat-card stat-green" style="text-decoration: none;">
             <div class="stat-icon">🙋</div>
             <div><div class="stat-number"><%= totalVolunteers %></div><div class="stat-label">Total Volunteers</div></div>
-        </div>
-        <div class="stat-card stat-blue">
+        </a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=organization" class="stat-card stat-blue" style="text-decoration: none;">
             <div class="stat-icon">🏢</div>
             <div><div class="stat-number"><%= totalOrganizations %></div><div class="stat-label">Organizations</div></div>
-        </div>
+        </a>
         <div class="stat-card stat-amber">
             <div class="stat-icon">📋</div>
             <div><div class="stat-number"><%= totalOpportunities %></div><div class="stat-label">Opportunities</div></div>

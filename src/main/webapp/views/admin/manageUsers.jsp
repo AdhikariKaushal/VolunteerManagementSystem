@@ -9,6 +9,7 @@
         return;
     }
     List<User> users        = (List<User>) request.getAttribute("users");
+    List<User> pendingUsers = (List<User>) request.getAttribute("pendingUsers");
     List<Organization> pendingOrganizations = (List<Organization>) request.getAttribute("pendingOrganizations");
     String viewMode = (String) request.getAttribute("viewMode");
     if (viewMode == null || viewMode.trim().isEmpty()) {
@@ -16,6 +17,7 @@
     }
     boolean isPendingView = "pendingUsers".equals(viewMode);
     boolean hasPendingOrganizations = pendingOrganizations != null && !pendingOrganizations.isEmpty();
+    boolean hasPendingUsers = pendingUsers != null && !pendingUsers.isEmpty();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -191,7 +193,48 @@
         </div>
     </div>
     <% } %>
-    <% if (isPendingView && !hasPendingOrganizations) { %>
+
+    <% if (hasPendingUsers) { %>
+    <div class="table-card">
+        <div class="table-card-header">
+            <h2>🙋 Pending Volunteers (<%= pendingUsers.size() %>)</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th><th>Email</th><th>Role</th><th>Registered</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% int m = 1; for (User pu : pendingUsers) { %>
+                <tr>
+                    <td><%= m++ %></td>
+                    <td><%= pu.getEmail() %></td>
+                    <td><span class="badge badge-open"><%= pu.getRole() %></span></td>
+                    <td><%= pu.getCreatedAt() %></td>
+                    <td>
+                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="approveUser"/>
+                            <input type="hidden" name="userId" value="<%= pu.getUserId() %>"/>
+                            <button type="submit" class="btn btn-primary">✅ Approve</button>
+                        </form>
+                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="rejectUser"/>
+                            <input type="hidden" name="userId" value="<%= pu.getUserId() %>"/>
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Reject this volunteer?')">❌ Reject</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (isPendingView && !hasPendingOrganizations && !hasPendingUsers) { %>
     <div class="table-card">
         <div class="table-card-header">
             <h2>⏳ Pending Approvals (0)</h2>
@@ -212,7 +255,10 @@
     <% if (!isPendingView) { %>
     <div class="table-card">
         <div class="table-card-header">
-            <h2>👥 All Users</h2>
+            <% String titleRoleFilter = request.getParameter("role"); %>
+            <h2>👥 <%= (titleRoleFilter != null && !titleRoleFilter.trim().isEmpty()) ? 
+                    (titleRoleFilter.substring(0, 1).toUpperCase() + titleRoleFilter.substring(1).toLowerCase() + "s") : "All Users" %>
+            </h2>
         </div>
         <div class="table-wrapper">
             <table>
@@ -223,10 +269,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% if (users != null && !users.isEmpty()) {
+                <% boolean hasDisplayableUsers = false;
+                   if (users != null && !users.isEmpty()) {
                     int j = 1;
+                    String roleFilter = request.getParameter("role");
                     for (User u : users) {
                         if ("admin".equals(u.getRole())) continue;
+                        if ("pending".equalsIgnoreCase(u.getStatus())) continue;
+                        if (roleFilter != null && !roleFilter.trim().isEmpty() && !roleFilter.equalsIgnoreCase(u.getRole())) continue;
+                        hasDisplayableUsers = true;
                 %>
                 <tr>
                     <td><%= j++ %></td>
@@ -249,12 +300,6 @@
                                         <button type="submit" class="btn btn-warning"
                                                 onclick="return confirm('Deactivate <%= u.getEmail() %>? They will be signed out and cannot log in until reactivated.')">Deactivate</button>
                                     </form>
-                                    <% } else if ("pending".equals(u.getStatus())) { %>
-                                    <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
-                                        <input type="hidden" name="action" value="approveUser"/>
-                                        <input type="hidden" name="userId" value="<%= u.getUserId() %>"/>
-                                        <button type="submit" class="btn btn-primary">Approve</button>
-                                    </form>
                                     <% } else if ("deactivated".equals(u.getStatus())) { %>
                                     <form action="<%= request.getContextPath() %>/AdminServlet" method="post">
                                         <input type="hidden" name="action" value="activateUser"/>
@@ -272,7 +317,8 @@
                         </div>
                     </td>
                 </tr>
-                <% } } else { %>
+                <% } } 
+                   if (!hasDisplayableUsers) { %>
                 <tr>
                     <td colspan="6" style="text-align:center; color:#999; padding:30px;">No users found.</td>
                 </tr>
