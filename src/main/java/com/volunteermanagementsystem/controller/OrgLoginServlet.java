@@ -5,14 +5,13 @@ import com.volunteermanagementsystem.service.OrganizationService;
 import com.volunteermanagementsystem.util.SessionUtil;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/org/login")
+// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class OrgLoginServlet extends HttpServlet {
 
     private final OrganizationService orgService = new OrganizationService();

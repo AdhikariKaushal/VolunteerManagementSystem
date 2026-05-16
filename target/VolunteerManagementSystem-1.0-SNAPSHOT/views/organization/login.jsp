@@ -18,6 +18,9 @@
     <% if (request.getAttribute("error") != null) { %>
     <div class="alert alert-error"><%= request.getAttribute("error") %></div>
     <% } %>
+    <% if ("1".equals(request.getParameter("inactive"))) { %>
+    <div class="alert alert-error">Your session ended because this organisation account is no longer active. Contact support if you need access restored.</div>
+    <% } %>
 
     <form action="${pageContext.request.contextPath}/org/login" method="post">
       <div class="form-group">

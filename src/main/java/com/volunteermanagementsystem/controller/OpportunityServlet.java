@@ -1,39 +1,34 @@
 package com.volunteermanagementsystem.controller;
 
-
-
 import com.volunteermanagementsystem.model.Opportunity;
 import com.volunteermanagementsystem.service.OpportunityService;
 import com.volunteermanagementsystem.util.SessionUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 import java.io.IOException;
 
-@WebServlet("/opportunity/*")
+// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class OpportunityServlet extends HttpServlet {
 
     private final OpportunityService oppService = new OpportunityService();
 
     /**
-     * GET /opportunity/create   → show create form
-     * GET /opportunity/edit?id= → show edit form pre-filled
+     * GET /opportunity/create     → show create form
+     * GET /opportunity/edit?id=   → show edit form pre-filled
      * GET /opportunity/delete?id= → delete and redirect
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String path  = req.getPathInfo();   // e.g. "/create", "/edit", "/delete"
-        int orgId    = SessionUtil.getOrgId(req);
+        String path = req.getPathInfo();
+        int orgId   = SessionUtil.getOrgId(req);
 
         if ("/create".equals(path)) {
-            // Show blank create form
-            req.getRequestDispatcher("/WEB-INF/views/opportunity/opportunityForm.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/organization/postOpportunity.jsp").forward(req, resp);
 
         } else if ("/edit".equals(path)) {
             int oppId = Integer.parseInt(req.getParameter("id"));
@@ -45,7 +40,7 @@ public class OpportunityServlet extends HttpServlet {
             }
             req.setAttribute("opp", opp);
             req.setAttribute("editMode", true);
-            req.getRequestDispatcher("/WEB-INF/views/opportunity/opportunityForm.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/organization/postOpportunity.jsp").forward(req, resp);
 
         } else if ("/delete".equals(path)) {
             int oppId = Integer.parseInt(req.getParameter("id"));
@@ -80,13 +75,14 @@ public class OpportunityServlet extends HttpServlet {
 
             if (error != null) {
                 req.setAttribute("error", error);
-                req.getRequestDispatcher("//views/organization/postOpportunity.jsp").forward(req, resp);
+                // FIX: was "//views/organization/postOpportunity.jsp" (double slash)
+                req.getRequestDispatcher("/views/organization/postOpportunity.jsp").forward(req, resp);
             } else {
                 resp.sendRedirect(req.getContextPath() + "/org/dashboard?msg=created");
             }
 
         } else if ("/edit".equals(path)) {
-            int oppId  = Integer.parseInt(req.getParameter("oppId"));
+            int oppId = Integer.parseInt(req.getParameter("oppId"));
             String status = req.getParameter("status");
 
             String error = oppService.update(oppId, orgId, title, description, location, category, slots, deadline, status);
@@ -96,7 +92,8 @@ public class OpportunityServlet extends HttpServlet {
                 req.setAttribute("opp", opp);
                 req.setAttribute("editMode", true);
                 req.setAttribute("error", error);
-                req.getRequestDispatcher("//views/organization/postOpportunity.jsp").forward(req, resp);
+                // FIX: was "//views/organization/postOpportunity.jsp" (double slash)
+                req.getRequestDispatcher("/views/organization/postOpportunity.jsp").forward(req, resp);
             } else {
                 resp.sendRedirect(req.getContextPath() + "/org/dashboard?msg=updated");
             }
