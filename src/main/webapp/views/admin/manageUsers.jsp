@@ -649,15 +649,7 @@
                                                                                                                         </span>
                                                                                                                     </td>
                                                                                                                     <td>
-                                                                                                                        <span
-                                                                                                                            class="badge <%= "
-                                                                                                                            active".equals(u.getStatus())
-                                                                                                                            ? "badge-active"
-                                                                                                                            : "pending"
-                                                                                                                            .equals(u.getStatus())
-                                                                                                                            ? "badge-pending"
-                                                                                                                            : "badge-deactivated"
-                                                                                                                            %>">
+                                                                                                                        <span class="badge <%= "active".equals(u.getStatus()) ? "badge-active" : "pending".equals(u.getStatus()) ? "badge-pending" : "badge-deactivated" %>">
                                                                                                                             <%= u.getStatus()
                                                                                                                                 %>
                                                                                                                         </span>
