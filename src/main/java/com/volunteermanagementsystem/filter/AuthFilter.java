@@ -47,10 +47,11 @@ public class AuthFilter implements Filter {
                 path.endsWith("/login.jsp")                          ||
                         path.endsWith("/index.jsp")                          ||
                         path.contains("/volunteer/register.jsp")             ||
-                        path.contains("/organization/register.jsp")           ||
+                        path.contains("/organization/register.jsp")          ||
                         path.contains("/extra/about.jsp")                    ||
                         path.contains("/extra/contact.jsp")                  ||
                         path.equals("/LoginServlet")                         ||
+                        path.equals("/RegisterVolunteerServlet")             ||
                         path.equals("/org/register")                         ||
                         path.equals("/org/login")                            ||
                         path.contains(".css")                                ||

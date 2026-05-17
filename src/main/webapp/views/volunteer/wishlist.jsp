@@ -89,7 +89,11 @@
                         <div class="opp-org"><i class="fa-solid fa-building-ngo"></i> <%= w.getOrganizationName() %></div>
                         <p class="opp-desc">Location: <%= w.getLocation() %><br>Starts: <%= w.getStartDate() %></p>
                         <div class="opp-footer">
-                            <button class="btn btn-primary btn-sm">Apply Now</button>
+                            <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="margin:0;">
+                                <input type="hidden" name="action" value="applyForOpportunity">
+                                <input type="hidden" name="opportunityId" value="<%= w.getOpportunityId() %>">
+                                <button type="submit" class="btn btn-primary btn-sm">Apply Now</button>
+                            </form>
                             <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="margin:0;">
                                 <input type="hidden" name="action" value="removeFromWishlist">
                                 <input type="hidden" name="opportunityId" value="<%= w.getOpportunityId() %>">

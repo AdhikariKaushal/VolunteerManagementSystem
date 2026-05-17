@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @WebServlet("/RegisterVolunteerServlet")
 public class RegisterVolunteerServlet extends HttpServlet {
@@ -22,13 +23,19 @@ public class RegisterVolunteerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fullName = request.getParameter("fullName");
-        String email = request.getParameter("email");
+        String email    = request.getParameter("email");
         String password = request.getParameter("password");
-        String phone = request.getParameter("phone");
+        String phone    = request.getParameter("phone");
+        String address  = request.getParameter("address");
+        String skills   = request.getParameter("skills");
+        String bio      = request.getParameter("bio");
+        String gender   = request.getParameter("gender");
+        String dobStr   = request.getParameter("dateOfBirth");
 
         // Simple validation
-        if (fullName == null || email == null || password == null || fullName.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
-            request.setAttribute("error", "All fields are required.");
+        if (fullName == null || email == null || password == null
+                || fullName.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
+            request.setAttribute("error", "Full name, email and password are required.");
             request.getRequestDispatcher("/views/volunteer/register.jsp").forward(request, response);
             return;
         }
@@ -49,21 +56,30 @@ public class RegisterVolunteerServlet extends HttpServlet {
         int userId = userDAO.insertUser(user);
 
         if (userId > 0) {
-            // 2. Create and insert Volunteer Profile
+            // 2. Create and insert Volunteer Profile with all fields
             Volunteer volunteer = new Volunteer();
             volunteer.setUserId(userId);
-            volunteer.setFullName(fullName);
-            volunteer.setEmail(email);
-            volunteer.setPhone(phone != null ? phone : "");
-            volunteer.setAddress(""); 
-            volunteer.setSkills("");
-            volunteer.setGender("");
-            volunteer.setBio("");
-            volunteer.setDateOfBirth(null);
+            volunteer.setFullName(fullName.trim());
+            volunteer.setEmail(email.trim());
+            volunteer.setPhone(phone != null ? phone.trim() : "");
+            volunteer.setAddress(address != null ? address.trim() : "");
+            volunteer.setSkills(skills != null ? skills.trim() : "");
+            volunteer.setBio(bio != null ? bio.trim() : "");
+            volunteer.setGender(gender != null ? gender : "");
+
+            // Parse date of birth if provided
+            if (dobStr != null && !dobStr.trim().isEmpty()) {
+                try {
+                    volunteer.setDateOfBirth(LocalDate.parse(dobStr));
+                } catch (Exception e) {
+                    volunteer.setDateOfBirth(null);
+                }
+            } else {
+                volunteer.setDateOfBirth(null);
+            }
 
             try {
                 volunteerDAO.registerVolunteer(volunteer);
-                // Success! Redirect to login
                 response.sendRedirect(request.getContextPath() + "/login.jsp?registered=true");
             } catch (Exception e) {
                 e.printStackTrace();

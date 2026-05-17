@@ -38,6 +38,14 @@ public class VolunteerServlet extends HttpServlet {
                 int oppId = Integer.parseInt(request.getParameter("opportunityId"));
                 volunteerDAO.addToWishlist(volunteer.getId(), oppId);
                 response.sendRedirect(request.getContextPath() + "/views/volunteer/browseOpportunities.jsp?added=true");
+            } else if ("applyForOpportunity".equals(action)) {
+                int oppId = Integer.parseInt(request.getParameter("opportunityId"));
+                boolean applied = volunteerDAO.applyForOpportunity(volunteer.getId(), oppId);
+                if (applied) {
+                    response.sendRedirect(request.getContextPath() + "/views/volunteer/browseOpportunities.jsp?applied=true");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/views/volunteer/browseOpportunities.jsp?applied=already");
+                }
             } else if ("removeFromWishlist".equals(action)) {
                 int oppId = Integer.parseInt(request.getParameter("opportunityId"));
                 volunteerDAO.removeFromWishlist(volunteer.getId(), oppId);

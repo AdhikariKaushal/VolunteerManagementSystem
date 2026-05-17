@@ -281,12 +281,12 @@ public class UserDAO {
 
     private void deleteOrganizationRecords(Connection conn, int userId) throws SQLException {
         Integer orgId = null;
-        String findSql = "SELECT org_id FROM organizations WHERE user_id = ?";
+        String findSql = "SELECT id FROM organizations WHERE user_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(findSql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    orgId = rs.getInt("org_id");
+                    orgId = rs.getInt("id");
                 }
             }
         }

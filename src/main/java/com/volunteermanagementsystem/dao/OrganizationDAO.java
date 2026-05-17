@@ -83,7 +83,7 @@ public class OrganizationDAO {
 
     public Organization findByEmail(String email) {
         lastError = null;
-        String sql = "SELECT o.org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
+        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
                 "u.email, u.password, u.status, u.created_at " +
                 "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
                 "WHERE LOWER(u.email) = LOWER(?) AND u.role = 'organization'";
@@ -102,10 +102,10 @@ public class OrganizationDAO {
 
     public Organization findById(int orgId) {
         lastError = null;
-        String sql = "SELECT o.org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
+        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
                 "u.email, u.password, u.status, u.created_at " +
                 "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
-                "WHERE o.org_id = ? AND u.role = 'organization'";
+                "WHERE o.id = ? AND u.role = 'organization'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -134,7 +134,7 @@ public class OrganizationDAO {
 
     public boolean phoneExists(String phone) {
         lastError = null;
-        String sql = "SELECT org_id FROM organizations WHERE phone = ?";
+        String sql = "SELECT id FROM organizations WHERE phone = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, phone);
@@ -147,7 +147,7 @@ public class OrganizationDAO {
 
     public boolean updateProfile(Organization org) {
         lastError = null;
-        String sql = "UPDATE organizations SET org_name=?, org_type=?, description=?, phone=?, address=? WHERE org_id=?";
+        String sql = "UPDATE organizations SET org_name=?, org_type=?, description=?, phone=?, address=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, org.getOrgName());
@@ -166,7 +166,7 @@ public class OrganizationDAO {
     public List<Organization> getPendingOrganizations() {
         lastError = null;
         List<Organization> organizations = new ArrayList<>();
-        String sql = "SELECT o.org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
+        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
                 "u.email, u.password, u.status, u.created_at " +
                 "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
                 "WHERE u.role = 'organization' AND u.status = 'pending' ORDER BY u.created_at DESC";
@@ -185,7 +185,7 @@ public class OrganizationDAO {
 
     public boolean updateOrganizationStatus(int orgId, String status) {
         lastError = null;
-        String sql = "UPDATE users u JOIN organizations o ON u.user_id = o.user_id SET u.status = ? WHERE o.org_id = ?";
+        String sql = "UPDATE users u JOIN organizations o ON u.user_id = o.user_id SET u.status = ? WHERE o.id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);

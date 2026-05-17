@@ -1,10 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.volunteermanagementsystem.dao.OpportunityDAO" %>
-<%@ page import="com.volunteermanagementsystem.model.Opportunity" %>
+<%@ page import="com.volunteermanagementsystem.dao.VolunteerDAO" %>
 <%@ page import="java.util.List" %>
 <%
-    OpportunityDAO oppDAO = new OpportunityDAO();
-    List<Opportunity> opps = oppDAO.findAll();
+    VolunteerDAO vDAO = new VolunteerDAO();
+    List<Object[]> opps = vDAO.getAllOpenOpportunities();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,22 +58,46 @@
                 <i class="fa-solid fa-heart"></i> Opportunity successfully added to your wishlist!
             </div>
         <% } %>
+        <% if ("true".equals(request.getParameter("applied"))) { %>
+            <div style="color: #27ae60; background: rgba(46, 204, 113, 0.15); padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fa-solid fa-circle-check"></i> Application submitted successfully!
+            </div>
+        <% } %>
+        <% if ("already".equals(request.getParameter("applied"))) { %>
+            <div style="color: #f39c12; background: rgba(243, 156, 18, 0.15); padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fa-solid fa-circle-info"></i> You have already applied for this opportunity!
+            </div>
+        <% } %>
 
         <div class="opportunities-grid">
             <% if(opps != null && !opps.isEmpty()) { 
-                  for(Opportunity o : opps) { 
+                  for(Object[] row : opps) { 
+                      int oppId = (Integer) row[0];
+                      String title = (String) row[1];
+                      String orgName = (String) row[2];
+                      String location = (String) row[3];
+                      String startDate = String.valueOf(row[4]);
+                      String category = (String) row[6];
             %>
             <div class="opp-card">
                 <div class="opp-header">
                 </div>
                 <div class="opp-body">
-                    <h3 class="opp-title"><%= o.getTitle() %></h3>
-                    <p class="opp-desc"><%= o.getDescription() != null ? (o.getDescription().length() > 80 ? o.getDescription().substring(0, 80) + "..." : o.getDescription()) : "" %></p>
-                    <div class="opp-footer">
-                        <button class="btn btn-primary btn-sm">Apply Now</button>
+                    <h3 class="opp-title"><%= title %></h3>
+                    <p class="opp-desc"><strong>Organization:</strong> <%= orgName %><br>
+                       <strong>Location:</strong> <%= location != null ? location : "TBD" %><br>
+                       <strong>Date:</strong> <%= startDate %><br>
+                       <strong>Category:</strong> <span style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.8em;"><%= category %></span>
+                    </p>
+                    <div class="opp-footer" style="display:flex; gap:10px;">
+                        <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="margin:0;">
+                            <input type="hidden" name="action" value="applyForOpportunity">
+                            <input type="hidden" name="opportunityId" value="<%= oppId %>">
+                            <button type="submit" class="btn btn-primary btn-sm">Apply Now</button>
+                        </form>
                         <form action="${pageContext.request.contextPath}/VolunteerServlet" method="post" style="margin:0;">
                             <input type="hidden" name="action" value="addToWishlist">
-                            <input type="hidden" name="opportunityId" value="<%= o.getOppId() %>">
+                            <input type="hidden" name="opportunityId" value="<%= oppId %>">
                             <button type="submit" class="btn-icon" title="Add to Wishlist"><i class="fa-regular fa-heart"></i></button>
                         </form>
                     </div>
