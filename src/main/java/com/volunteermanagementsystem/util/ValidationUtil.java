@@ -22,7 +22,7 @@ public class ValidationUtil {
 
     public static boolean isAlphaOnly(String value) {
         if (isEmpty(value)) return false;
-        return value.matches("^[a-zA-Z\\s]+$");
+        return value.matches("^[a-zA-Z0-9\\s&.,'()-]+$");  // allow common org name chars
     }
 
     // This was missing — needed by OpportunityService
