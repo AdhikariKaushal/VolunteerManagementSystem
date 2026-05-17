@@ -37,6 +37,8 @@ public class AuthFilter implements Filter {
         boolean isPublicPage =
                 requestURI.endsWith("login.jsp")                        ||
                         requestURI.endsWith("index.jsp")                        ||
+                        requestURI.contains("/organization/applications.jsp") ||
+                        requestURI.contains("/updateApplicationStatus") ||
                         requestURI.contains("/volunteer/register.jsp")          ||
                         requestURI.contains("/organization/register.jsp")       ||
                         requestURI.contains("/extra/about.jsp")                 ||
