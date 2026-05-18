@@ -75,6 +75,6 @@ A web-based platform that connects volunteers with organizations offering volunt
 ## Contributors
 
 - Darpan Ghimire
-- Kaushal Adhikari
 - Oshan Rai
+- Kaushal Adhikari
 - Sneha Tiwari
