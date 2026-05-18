@@ -1,7 +1,5 @@
 package com.volunteermanagementsystem.service;
 
-
-
 import com.volunteermanagementsystem.dao.OrganizationDAO;
 import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.util.PasswordUtil;
@@ -41,6 +39,7 @@ public class OrganizationService {
         org.setDescription(description);
         org.setPhone(phone.trim());
         org.setAddress(address);
+        org.setStatus("active"); // Set active immediately, no admin approval needed
 
         return orgDAO.register(org) ? null : "Registration failed. Please try again.";
     }
@@ -54,11 +53,6 @@ public class OrganizationService {
         Organization org = orgDAO.findByEmail(email.trim());
         if (org == null) return null;
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return null;
-        // Admin approval sets status to "active" (see AdminService.approveOrganization)
-        String st = org.getStatus();
-        if (st == null || !("active".equalsIgnoreCase(st) || "approved".equalsIgnoreCase(st))) {
-            return null;
-        }
 
         return org;
     }
@@ -71,11 +65,8 @@ public class OrganizationService {
             return "Email and password are required.";
 
         Organization org = orgDAO.findByEmail(email.trim());
-        if (org == null)                                        return "No account found with this email.";
+        if (org == null)                                               return "No account found with this email.";
         if (!PasswordUtil.verifyPassword(password, org.getPassword())) return "Incorrect password.";
-        String st = org.getStatus();
-        if (st != null && "pending".equalsIgnoreCase(st))      return "Your account is awaiting admin approval.";
-        if (st != null && "deactivated".equalsIgnoreCase(st))  return "Your organisation account is inactive. Contact support.";
         return "Login failed. Please try again.";
     }
 

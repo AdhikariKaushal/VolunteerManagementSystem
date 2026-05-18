@@ -21,14 +21,9 @@ public class OrganizationDAO {
         System.err.println("[OrganizationDAO." + method + "] " + msg);
     }
 
-    /**
-     * Schema-aligned registration:
-     * 1) Insert credentials into users (role=organization, status=pending)
-     * 2) Insert profile into organizations with generated user_id
-     */
     public boolean register(Organization org) {
         lastError = null;
-        String userSql = "INSERT INTO users (email, password, role, status) VALUES (?, ?, 'organization', 'pending')";
+        String userSql = "INSERT INTO users (email, password, role, status) VALUES (?, ?, 'organization', 'active')";
         String orgSql = "INSERT INTO organizations (user_id, org_name, org_type, phone, address, description) VALUES (?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
@@ -42,9 +37,7 @@ public class OrganizationDAO {
                 userPs.setString(2, org.getPassword());
                 userPs.executeUpdate();
                 try (ResultSet keys = userPs.getGeneratedKeys()) {
-                    if (!keys.next()) {
-                        throw new SQLException("Failed to create organization user account.");
-                    }
+                    if (!keys.next()) throw new SQLException("Failed to create organization user account.");
                     userId = keys.getInt(1);
                 }
             }
@@ -64,26 +57,20 @@ public class OrganizationDAO {
         } catch (SQLException e) {
             setLastError("register", e);
             if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackEx) {
-                    setLastError("registerRollback", rollbackEx);
-                }
+                try { conn.rollback(); } catch (SQLException rb) { setLastError("registerRollback", rb); }
             }
             return false;
         } finally {
             if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException ignored) {}
+                try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ignored) {}
             }
         }
     }
 
     public Organization findByEmail(String email) {
         lastError = null;
-        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
+        // Fixed: o.org_id instead of o.id
+        String sql = "SELECT o.org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
                 "u.email, u.password, u.status, u.created_at " +
                 "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
                 "WHERE LOWER(u.email) = LOWER(?) AND u.role = 'organization'";
@@ -102,10 +89,11 @@ public class OrganizationDAO {
 
     public Organization findById(int orgId) {
         lastError = null;
-        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
+        // Fixed: o.org_id instead of o.id
+        String sql = "SELECT o.org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
                 "u.email, u.password, u.status, u.created_at " +
                 "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
-                "WHERE o.id = ? AND u.role = 'organization'";
+                "WHERE o.org_id = ? AND u.role = 'organization'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -134,7 +122,8 @@ public class OrganizationDAO {
 
     public boolean phoneExists(String phone) {
         lastError = null;
-        String sql = "SELECT id FROM organizations WHERE phone = ?";
+        // Fixed: org_id instead of id
+        String sql = "SELECT org_id FROM organizations WHERE phone = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, phone);
@@ -147,7 +136,8 @@ public class OrganizationDAO {
 
     public boolean updateProfile(Organization org) {
         lastError = null;
-        String sql = "UPDATE organizations SET org_name=?, org_type=?, description=?, phone=?, address=? WHERE id=?";
+        // Fixed: org_id instead of id
+        String sql = "UPDATE organizations SET org_name=?, org_type=?, description=?, phone=?, address=? WHERE org_id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, org.getOrgName());
@@ -163,29 +153,10 @@ public class OrganizationDAO {
         }
     }
 
-    public List<Organization> getPendingOrganizations() {
-        lastError = null;
-        List<Organization> organizations = new ArrayList<>();
-        String sql = "SELECT o.id as org_id, o.user_id, o.org_name, o.org_type, o.phone, o.address, o.description, " +
-                "u.email, u.password, u.status, u.created_at " +
-                "FROM organizations o JOIN users u ON o.user_id = u.user_id " +
-                "WHERE u.role = 'organization' AND u.status = 'pending' ORDER BY u.created_at DESC";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                organizations.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            setLastError("getPendingOrganizations", e);
-        }
-        return organizations;
-    }
-
     public boolean updateOrganizationStatus(int orgId, String status) {
         lastError = null;
-        String sql = "UPDATE users u JOIN organizations o ON u.user_id = o.user_id SET u.status = ? WHERE o.id = ?";
+        // Fixed: o.org_id instead of o.id
+        String sql = "UPDATE users u JOIN organizations o ON u.user_id = o.user_id SET u.status = ? WHERE o.org_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);

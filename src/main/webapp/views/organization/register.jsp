@@ -17,6 +17,10 @@
         <div class="alert alert-error"><%= request.getAttribute("error") %></div>
         <% } %>
 
+        <% if (request.getAttribute("success") != null) { %>
+        <div class="alert alert-success"><%= request.getAttribute("success") %></div>
+        <% } %>
+
         <form action="${pageContext.request.contextPath}/org/register" method="post" novalidate>
             <div class="form-group">
                 <label for="orgName">Organisation Name *</label>
@@ -53,7 +57,6 @@
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="3" placeholder="Briefly describe your organisation">${description}</textarea>
             </div>
-
             <div class="form-group">
                 <label for="address">Address</label>
                 <input type="text" id="address" name="address" value="${address}" placeholder="City, Country">

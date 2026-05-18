@@ -12,14 +12,16 @@
     <h2>Organisation Login</h2>
     <p class="auth-sub">Sign in to manage your opportunities</p>
 
-    <% if (request.getAttribute("success") != null) { %>
-    <div class="alert alert-success"><%= request.getAttribute("success") %></div>
+    <%
+      String successMsg = (String) session.getAttribute("success");
+      if (successMsg != null) {
+        session.removeAttribute("success");
+    %>
+    <div class="alert alert-success"><%= successMsg %></div>
     <% } %>
+
     <% if (request.getAttribute("error") != null) { %>
     <div class="alert alert-error"><%= request.getAttribute("error") %></div>
-    <% } %>
-    <% if ("1".equals(request.getParameter("inactive"))) { %>
-    <div class="alert alert-error">Your session ended because this organisation account is no longer active. Contact support if you need access restored.</div>
     <% } %>
 
     <form action="${pageContext.request.contextPath}/org/login" method="post">

@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-// NOTE: No @WebServlet annotation — registered in web.xml only to avoid duplicate mapping errors
 public class OrgLoginServlet extends HttpServlet {
 
     private final OrganizationService orgService = new OrganizationService();
@@ -25,9 +24,17 @@ public class OrgLoginServlet extends HttpServlet {
             return;
         }
 
+        // Check for success message from registration
         String success = req.getParameter("success");
         if ("registered".equals(success)) {
-            req.setAttribute("success", "Registration successful! Please wait for admin approval.");
+            req.setAttribute("success", "Registration successful! You can now log in.");
+        }
+
+        // Check for session-based success message
+        String sessionSuccess = (String) req.getSession().getAttribute("success");
+        if (sessionSuccess != null) {
+            req.setAttribute("success", sessionSuccess);
+            req.getSession().removeAttribute("success");
         }
 
         req.getRequestDispatcher("/views/organization/login.jsp").forward(req, resp);
@@ -43,6 +50,8 @@ public class OrgLoginServlet extends HttpServlet {
         Organization org = orgService.login(email, password);
 
         if (org != null) {
+            req.getSession().invalidate();    // destroy old session
+            req.getSession(true);             // create fresh session
             SessionUtil.setOrganization(req, org);
             resp.sendRedirect(req.getContextPath() + "/org/dashboard");
         } else {

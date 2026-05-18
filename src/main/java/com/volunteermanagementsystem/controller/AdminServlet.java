@@ -1,6 +1,5 @@
 package com.volunteermanagementsystem.controller;
 
-import com.volunteermanagementsystem.model.Organization;
 import com.volunteermanagementsystem.model.User;
 import com.volunteermanagementsystem.service.AdminService;
 import com.volunteermanagementsystem.util.SessionUtil;
@@ -45,15 +44,6 @@ public class AdminServlet extends HttpServlet {
                 request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
                 break;
 
-            case "pendingUsers":
-                List<User> pendingUsers = adminService.getPendingUsers();
-                List<Organization> pendingOrganizations = adminService.getPendingOrganizations();
-                request.setAttribute("pendingUsers", pendingUsers);
-                request.setAttribute("pendingOrganizations", pendingOrganizations);
-                request.setAttribute("viewMode", "pendingUsers");
-                request.getRequestDispatcher("/views/admin/manageUsers.jsp").forward(request, response);
-                break;
-
             case "reports":
                 request.setAttribute("totalVolunteers",    adminService.getTotalVolunteers());
                 request.setAttribute("totalOrganizations", adminService.getTotalOrganizations());
@@ -84,66 +74,29 @@ public class AdminServlet extends HttpServlet {
 
         switch (action) {
 
-            case "approveUser": {
-                int userId = Integer.parseInt(request.getParameter("userId"));
-                adminService.approveUser(userId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+approved+successfully");
-                break;
-            }
-
-            case "rejectUser": {
-                int userId = Integer.parseInt(request.getParameter("userId"));
-                adminService.rejectUser(userId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=manageUsers&message=User+rejected+successfully");
-                break;
-            }
-
             case "deactivateUser": {
                 int userId = Integer.parseInt(request.getParameter("userId"));
                 int adminId = SessionUtil.getUserId(request);
-                String deactivateError = adminService.deactivateUser(userId, adminId);
-                if (deactivateError != null) {
-                    redirectManageUsers(response, request, "error", deactivateError);
-                } else {
-                    redirectManageUsers(response, request, "message", "User deactivated successfully. They can no longer sign in.");
-                }
+                String error = adminService.deactivateUser(userId, adminId);
+                if (error != null) redirectManageUsers(response, request, "error", error);
+                else redirectManageUsers(response, request, "message", "User deactivated successfully. They can no longer sign in.");
                 break;
             }
 
             case "activateUser": {
                 int userId = Integer.parseInt(request.getParameter("userId"));
-                String activateError = adminService.activateUser(userId);
-                if (activateError != null) {
-                    redirectManageUsers(response, request, "error", activateError);
-                } else {
-                    redirectManageUsers(response, request, "message", "User activated successfully. They can sign in again.");
-                }
+                String error = adminService.activateUser(userId);
+                if (error != null) redirectManageUsers(response, request, "error", error);
+                else redirectManageUsers(response, request, "message", "User activated successfully. They can sign in again.");
                 break;
             }
 
             case "deleteUser": {
                 int userId = Integer.parseInt(request.getParameter("userId"));
                 int adminId = SessionUtil.getUserId(request);
-                String deleteError = adminService.deleteUser(userId, adminId);
-                if (deleteError != null) {
-                    redirectManageUsers(response, request, "error", deleteError);
-                } else {
-                    redirectManageUsers(response, request, "message", "User deleted permanently.");
-                }
-                break;
-            }
-
-            case "approveOrganization": {
-                int orgId = Integer.parseInt(request.getParameter("orgId"));
-                adminService.approveOrganization(orgId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=pendingUsers&message=Organization+approved+successfully");
-                break;
-            }
-
-            case "rejectOrganization": {
-                int orgId = Integer.parseInt(request.getParameter("orgId"));
-                adminService.rejectOrganization(orgId);
-                response.sendRedirect(request.getContextPath() + "/AdminServlet?action=pendingUsers&message=Organization+rejected+successfully");
+                String error = adminService.deleteUser(userId, adminId);
+                if (error != null) redirectManageUsers(response, request, "error", error);
+                else redirectManageUsers(response, request, "message", "User deleted permanently.");
                 break;
             }
 
