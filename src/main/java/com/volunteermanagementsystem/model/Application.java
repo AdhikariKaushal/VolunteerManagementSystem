@@ -15,6 +15,10 @@ public class Application {
     private String volunteerEmail;
     private String volunteerPhone;
     private String opportunityTitle;
+    private String organizationName;
+
+    public String getOrganizationName()           { return organizationName; }
+    public void setOrganizationName(String n)     { this.organizationName = n; }
 
     public Application() {}
 

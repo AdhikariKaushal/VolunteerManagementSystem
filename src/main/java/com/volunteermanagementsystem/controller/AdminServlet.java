@@ -68,6 +68,11 @@ public class AdminServlet extends HttpServlet {
                 request.getRequestDispatcher("/views/admin/manageOpportunities.jsp").forward(request, response);
                 break;
 
+            case "applications":
+                request.setAttribute("applications", adminService.getAllApplications());
+                request.getRequestDispatcher("/views/admin/applications.jsp").forward(request, response);
+                break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
         }

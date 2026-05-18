@@ -202,6 +202,14 @@ public class AdminService {
     }
 
     /**
+     * Returns all applications across the platform for admin oversight.
+     * Author: Kaushal Adhikari
+     */
+    public List<com.volunteermanagementsystem.model.Application> getAllApplications() {
+        return adminDAO.getAllApplications();
+    }
+
+    /**
      * Returns last 5 registered users for recent activity section.
      * Author: Kaushal Adhikari
      */

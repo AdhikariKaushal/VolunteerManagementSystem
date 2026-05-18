@@ -175,6 +175,52 @@ public class AdminDAO {
         return list;
     }
 
+    /**
+     * Returns ALL applications across the platform for admin oversight.
+     * Joins application → volunteer → users → opportunity → organizations
+     * Author: Kaushal Adhikari
+     */
+    public List<com.volunteermanagementsystem.model.Application> getAllApplications() {
+        List<com.volunteermanagementsystem.model.Application> list = new ArrayList<>();
+        String sql =
+                "SELECT a.app_id, a.opp_id, a.vol_id, a.status, a.applied_at, " +
+                        "       v.full_name AS volunteer_name, " +
+                        "       u.email     AS volunteer_email, " +
+                        "       o.title     AS opportunity_title, " +
+                        "       org.org_name AS organization_name " +
+                        "FROM application a " +
+                        "JOIN volunteer    v   ON a.vol_id  = v.vol_id " +
+                        "JOIN users        u   ON v.user_id = u.user_id " +
+                        "JOIN opportunity  o   ON a.opp_id  = o.opp_id " +
+                        "JOIN organizations org ON o.org_id = org.org_id " +
+                        "ORDER BY a.applied_at DESC";
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                com.volunteermanagementsystem.model.Application app =
+                        new com.volunteermanagementsystem.model.Application();
+                app.setAppId(rs.getInt("app_id"));
+                app.setOppId(rs.getInt("opp_id"));
+                app.setVolId(rs.getInt("vol_id"));
+                app.setStatus(rs.getString("status"));
+                app.setAppliedAt(rs.getTimestamp("applied_at"));
+                app.setVolunteerName(rs.getString("volunteer_name"));
+                app.setVolunteerEmail(rs.getString("volunteer_email"));
+                app.setOpportunityTitle(rs.getString("opportunity_title"));
+                app.setOrganizationName(rs.getString("organization_name"));
+                list.add(app);
+            }
+        } catch (SQLException e) {
+            System.err.println("[AdminDAO.getAllApplications] " + e.getMessage());
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+        return list;
+    }
+
     // ── private helpers ───────────────────────────────────────────────────────
 
     private boolean updateOpportunityStatus(int oppId, String newStatus) {

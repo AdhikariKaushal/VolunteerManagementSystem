@@ -102,7 +102,7 @@
         <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers"         class="nav-item">👥 Manage Users</a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers"        class="nav-item">⏳ Pending Approvals</a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities" class="nav-item">📋 Opportunities</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports"             class="nav-item">📈 Reports</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=applications"             class="nav-item">📝 Applications</a>
     </nav>
     <div class="sidebar-footer">
         <a href="<%= request.getContextPath() %>/LogoutServlet" class="nav-item logout">🚪 Logout</a>
@@ -135,7 +135,7 @@
             <div class="stat-icon">📋</div>
             <div><div class="stat-number"><%= totalOpportunities %></div><div class="stat-label">Opportunities</div></div>
         </a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports"
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=applications"
            class="stat-card stat-purple">
             <div class="stat-icon">📝</div>
             <div><div class="stat-number"><%= totalApplications %></div><div class="stat-label">Applications</div></div>
