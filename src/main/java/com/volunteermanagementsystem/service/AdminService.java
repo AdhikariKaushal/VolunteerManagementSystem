@@ -5,6 +5,7 @@ import com.volunteermanagementsystem.dao.OrganizationDAO;
 import com.volunteermanagementsystem.dao.UserDAO;
 import com.volunteermanagementsystem.model.Admin;
 import com.volunteermanagementsystem.model.Organization;
+import com.volunteermanagementsystem.model.Opportunity;
 import com.volunteermanagementsystem.model.User;
 
 import java.util.List;
@@ -158,5 +159,45 @@ public class AdminService {
 
     public int getTotalApplications() {
         return adminDAO.countApplications();
+    }
+
+    // ── Opportunity oversight (admin-only) ────────────────────────────────────
+
+    /**
+     * Returns ALL opportunities across all organisations for admin oversight.
+     * Author: Kaushal Adhikari
+     */
+    public List<Opportunity> getAllOpportunities() {
+        return adminDAO.getAllOpportunities();
+    }
+
+    /**
+     * Flags an opportunity as suspicious/inappropriate.
+     * @return null on success, error message on failure
+     */
+    public String flagOpportunity(int oppId) {
+        return adminDAO.flagOpportunity(oppId)
+                ? null
+                : "Failed to flag opportunity. Please try again.";
+    }
+
+    /**
+     * Removes a flag from an opportunity (restores to 'open').
+     * @return null on success, error message on failure
+     */
+    public String unflagOpportunity(int oppId) {
+        return adminDAO.unflagOpportunity(oppId)
+                ? null
+                : "Failed to unflag opportunity. Please try again.";
+    }
+
+    /**
+     * Permanently removes an inappropriate opportunity.
+     * @return null on success, error message on failure
+     */
+    public String removeOpportunity(int oppId) {
+        return adminDAO.removeOpportunity(oppId)
+                ? null
+                : "Failed to remove opportunity. Please try again.";
     }
 }

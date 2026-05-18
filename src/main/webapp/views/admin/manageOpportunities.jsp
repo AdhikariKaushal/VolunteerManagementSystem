@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.volunteermanagementsystem.dao.OpportunityDAO" %>
 <%@ page import="com.volunteermanagementsystem.model.Opportunity" %>
 <%@ page import="java.util.List" %>
 <%
@@ -8,8 +7,9 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
-    OpportunityDAO opportunityDAO = new OpportunityDAO();
-    List<Opportunity> opportunities = opportunityDAO.findAll();
+    List<Opportunity> opportunities = (List<Opportunity>) request.getAttribute("opportunities");
+    String message = request.getParameter("message");
+    String error = request.getParameter("error");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +47,19 @@
         .page-header h1 { font-size: 24px; font-weight: 700; color: #1a1a1a; }
         .page-subtitle { font-size: 14px; color: #777; margin-top: 4px; }
 
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+        .alert-success { background: #e8f5ee; color: #1a6b3c; border: 1px solid #c3e6cb; }
+        .alert-error { background: #fde8e8; color: #a32d2d; border: 1px solid #f5c6cb; }
+
+        .filter-bar {
+            display: flex; gap: 16px; margin-bottom: 24px;
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 14px; outline: none;
+        }
+        .filter-bar input { flex: 1; }
+
         .table-card {
             background: #fff; border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 28px; overflow: hidden;
@@ -69,7 +82,19 @@
             font-size: 11px; font-weight: 600; text-transform: uppercase;
         }
         .badge-open   { background: #e8f5ee; color: #1a6b3c; }
-        .badge-closed { background: #fde8e8; color: #a32d2d; }
+        .badge-closed { background: #e2e8f0; color: #4a5568; }
+        .badge-flagged { background: #fde8e8; color: #a32d2d; }
+
+        .btn-action {
+            padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 12px; font-weight: 600; transition: background 0.2s;
+        }
+        .btn-flag { background: #fee2e2; color: #991b1b; }
+        .btn-flag:hover { background: #fecaca; }
+        .btn-unflag { background: #dcfce7; color: #166534; }
+        .btn-unflag:hover { background: #bbf7d0; }
+        
+        .org-name { font-size: 12px; color: #666; display: block; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -81,7 +106,7 @@
         <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers" class="nav-item">👥 Manage Users</a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers" class="nav-item">⏳ Pending Approvals</a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=reports" class="nav-item">📈 Reports</a>
-        <a href="<%= request.getContextPath() %>/views/admin/manageOpportunities.jsp" class="nav-item active">📋 Opportunities</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities" class="nav-item active">📋 Opportunities</a>
     </nav>
     <div class="sidebar-footer">
         <a href="<%= request.getContextPath() %>/LogoutServlet" class="nav-item logout">🚪 Logout</a>
@@ -91,7 +116,20 @@
 <main class="main-content">
     <div class="page-header">
         <h1>Volunteer Opportunities</h1>
-        <p class="page-subtitle">View all opportunities posted by organizations</p>
+        <p class="page-subtitle">Monitor and oversee all opportunities posted by organizations</p>
+    </div>
+
+    <% if (message != null) { %><div class="alert alert-success"><%= message %></div><% } %>
+    <% if (error != null) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by title, description or organization..." onkeyup="filterTable()">
+        <select id="statusFilter" onchange="filterTable()">
+            <option value="all">All Statuses</option>
+            <option value="open">Active (Open)</option>
+            <option value="closed">Filled (Closed)</option>
+            <option value="flagged">Flagged</option>
+        </select>
     </div>
 
     <div class="table-card">
@@ -99,34 +137,57 @@
             <h2>📋 All Opportunities (<%= opportunities != null ? opportunities.size() : 0 %>)</h2>
         </div>
         <div class="table-wrapper">
-            <table>
+            <table id="opportunitiesTable">
                 <thead>
                 <tr>
-                    <th>#</th><th>Title</th><th>Location</th>
-                    <th>Deadline</th><th>Slots</th><th>Category</th><th>Status</th>
+                    <th>#</th>
+                    <th>Title & Organization</th>
+                    <th>Location & Date</th>
+                    <th>Slots</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <% if (opportunities != null && !opportunities.isEmpty()) {
                     int i = 1;
-                    for (Opportunity o : opportunities) { %>
+                    for (Opportunity o : opportunities) { 
+                        String badgeClass = "badge-closed";
+                        if ("open".equalsIgnoreCase(o.getStatus())) badgeClass = "badge-open";
+                        else if ("flagged".equalsIgnoreCase(o.getStatus())) badgeClass = "badge-flagged";
+                %>
                 <tr>
                     <td><%= i++ %></td>
                     <td>
                         <strong><%= o.getTitle() %></strong>
-                        <div style="font-size:12px; color:#999; margin-top:2px;">
-                            <%= o.getDescription() != null && o.getDescription().length() > 60
-                                    ? o.getDescription().substring(0, 60) + "..." : o.getDescription() %>
-                        </div>
+                        <span class="org-name">By: <%= o.getOrgName() != null ? o.getOrgName() : "Unknown Org" %></span>
                     </td>
-                    <td><%= o.getLocation() != null ? o.getLocation() : "—" %></td>
-                    <td><%= o.getDeadline() != null ? o.getDeadline() : "—" %></td>
+                    <td>
+                        <div style="font-size:13px;"><%= o.getLocation() != null ? o.getLocation() : "—" %></div>
+                        <div style="font-size:12px; color:#666;"><%= o.getDeadline() != null ? o.getDeadline() : "—" %></div>
+                    </td>
                     <td><%= o.getSlots() %></td>
                     <td><%= o.getCategory() != null ? o.getCategory() : "—" %></td>
-                    <td>
-                        <span class="badge <%= "open".equals(o.getStatus()) ? "badge-open" : "badge-closed" %>">
+                    <td class="status-cell">
+                        <span class="badge <%= badgeClass %>" data-status="<%= o.getStatus().toLowerCase() %>">
                             <%= o.getStatus() %>
                         </span>
+                    </td>
+                    <td>
+                        <% if (!"flagged".equalsIgnoreCase(o.getStatus())) { %>
+                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="flagOpportunity">
+                            <input type="hidden" name="oppId" value="<%= o.getOppId() %>">
+                            <button type="submit" class="btn-action btn-flag" title="Flag as inappropriate">🚩 Flag</button>
+                        </form>
+                        <% } else { %>
+                        <form action="<%= request.getContextPath() %>/AdminServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="unflagOpportunity">
+                            <input type="hidden" name="oppId" value="<%= o.getOppId() %>">
+                            <button type="submit" class="btn-action btn-unflag">✅ Unflag</button>
+                        </form>
+                        <% } %>
                     </td>
                 </tr>
                 <% } } else { %>
@@ -141,6 +202,33 @@
         </div>
     </div>
 </main>
+
+<script>
+    function filterTable() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        const table = document.getElementById('opportunitiesTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            // Skip the "no opportunities" row if it exists
+            if (rows[i].getElementsByTagName('td').length === 1) continue;
+            
+            const titleOrgText = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+            const badgeSpan = rows[i].querySelector('.badge');
+            const status = badgeSpan ? badgeSpan.getAttribute('data-status') : '';
+
+            const matchesSearch = titleOrgText.includes(searchText);
+            const matchesStatus = (statusFilter === 'all') || (status === statusFilter);
+
+            if (matchesSearch && matchesStatus) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+</script>
 
 </body>
 </html>

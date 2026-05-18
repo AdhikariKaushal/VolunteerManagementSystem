@@ -62,6 +62,11 @@ public class AdminServlet extends HttpServlet {
                 request.getRequestDispatcher("/views/admin/reports.jsp").forward(request, response);
                 break;
 
+            case "manageOpportunities":
+                request.setAttribute("opportunities", adminService.getAllOpportunities());
+                request.getRequestDispatcher("/views/admin/manageOpportunities.jsp").forward(request, response);
+                break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
         }
@@ -147,6 +152,28 @@ public class AdminServlet extends HttpServlet {
                 break;
             }
 
+            case "flagOpportunity": {
+                int oppId = Integer.parseInt(request.getParameter("oppId"));
+                String error = adminService.flagOpportunity(oppId);
+                if (error != null) {
+                    redirectManageOpportunities(response, request, "error", error);
+                } else {
+                    redirectManageOpportunities(response, request, "message", "Opportunity flagged successfully.");
+                }
+                break;
+            }
+
+            case "unflagOpportunity": {
+                int oppId = Integer.parseInt(request.getParameter("oppId"));
+                String error = adminService.unflagOpportunity(oppId);
+                if (error != null) {
+                    redirectManageOpportunities(response, request, "error", error);
+                } else {
+                    redirectManageOpportunities(response, request, "message", "Opportunity unflagged successfully.");
+                }
+                break;
+            }
+
             default:
                 response.sendRedirect(request.getContextPath() + "/AdminServlet?action=dashboard");
         }
@@ -157,5 +184,12 @@ public class AdminServlet extends HttpServlet {
         String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
         response.sendRedirect(request.getContextPath()
                 + "/AdminServlet?action=manageUsers&" + param + "=" + encoded);
+    }
+
+    private void redirectManageOpportunities(HttpServletResponse response, HttpServletRequest request,
+                                     String param, String text) throws IOException {
+        String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        response.sendRedirect(request.getContextPath()
+                + "/AdminServlet?action=manageOpportunities&" + param + "=" + encoded);
     }
 }

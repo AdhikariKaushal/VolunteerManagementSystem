@@ -119,4 +119,64 @@
     <url-pattern>/org/profile</url-pattern>
 </servlet-mapping>
 
+<!-- Register Volunteer Servlet -->
+<servlet>
+    <servlet-name>RegisterVolunteerServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.RegisterVolunteerServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>RegisterVolunteerServlet</servlet-name>
+    <url-pattern>/RegisterVolunteerServlet</url-pattern>
+</servlet-mapping>
+
+<!-- Opportunity Servlet -->
+<servlet>
+    <servlet-name>OpportunityServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OpportunityServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OpportunityServlet</servlet-name>
+    <url-pattern>/opportunity</url-pattern>
+</servlet-mapping>
+
+<!-- Organization Servlet -->
+<servlet>
+    <servlet-name>OrganizationServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.OrganizationServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OrganizationServlet</servlet-name>
+    <url-pattern>/OrganizationServlet</url-pattern>
+</servlet-mapping>
+
+<!-- Volunteer Servlet -->
+<servlet>
+    <servlet-name>VolunteerServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.VolunteerServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>VolunteerServlet</servlet-name>
+    <url-pattern>/VolunteerServlet</url-pattern>
+</servlet-mapping>
+
+<!-- Application Servlet -->
+<servlet>
+    <servlet-name>ApplicationServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.ApplicationServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>ApplicationServlet</servlet-name>
+    <url-pattern>/ApplicationServlet</url-pattern>
+</servlet-mapping>
+
+<!-- Attendance Servlet -->
+<servlet>
+    <servlet-name>AttendanceServlet</servlet-name>
+    <servlet-class>com.volunteermanagementsystem.controller.AttendanceServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>AttendanceServlet</servlet-name>
+    <url-pattern>/AttendanceServlet</url-pattern>
+</servlet-mapping>
+
 </web-app>

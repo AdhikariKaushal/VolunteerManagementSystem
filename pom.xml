@@ -53,11 +53,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
-        <!-- ✅ BCrypt — for secure password hashing -->
+        <!-- ✅ BCrypt — for secure password hashing (org.mindrot jbcrypt) -->
         <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
-            <version>0.10.2</version>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
     </dependencies>
 

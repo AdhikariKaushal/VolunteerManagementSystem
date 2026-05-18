@@ -3,17 +3,18 @@ package com.volunteermanagementsystem.controller;
 import com.volunteermanagementsystem.dao.VolunteerDAO;
 import com.volunteermanagementsystem.model.Volunteer;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@WebServlet("/VolunteerServlet")
 public class VolunteerServlet extends HttpServlet {
-    private VolunteerDAO volunteerDAO = new VolunteerDAO();
+    private static final Logger LOGGER = Logger.getLogger(VolunteerServlet.class.getName());
+    private final VolunteerDAO volunteerDAO = new VolunteerDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,7 +63,7 @@ public class VolunteerServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/views/volunteer/dashboard.jsp");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in VolunteerServlet doPost: ", e);
             response.sendRedirect(request.getContextPath() + "/views/volunteer/dashboard.jsp?error=true");
         }
     }

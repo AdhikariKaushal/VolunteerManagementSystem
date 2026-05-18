@@ -6,7 +6,6 @@ import com.volunteermanagementsystem.model.User;
 import com.volunteermanagementsystem.model.Volunteer;
 import com.volunteermanagementsystem.util.PasswordUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 
-@WebServlet("/RegisterVolunteerServlet")
 public class RegisterVolunteerServlet extends HttpServlet {
 
     private UserDAO userDAO = new UserDAO();
