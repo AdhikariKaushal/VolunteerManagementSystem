@@ -200,4 +200,12 @@ public class AdminService {
                 ? null
                 : "Failed to remove opportunity. Please try again.";
     }
+
+    /**
+     * Returns last 5 registered users for recent activity section.
+     * Author: Kaushal Adhikari
+     */
+    public List<com.volunteermanagementsystem.model.User> getRecentRegistrations() {
+        return adminDAO.getRecentRegistrations();
+    }
 }

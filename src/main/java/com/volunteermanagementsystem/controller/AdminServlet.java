@@ -55,10 +55,11 @@ public class AdminServlet extends HttpServlet {
                 break;
 
             case "reports":
-                request.setAttribute("totalVolunteers",    adminService.getTotalVolunteers());
-                request.setAttribute("totalOrganizations", adminService.getTotalOrganizations());
-                request.setAttribute("totalOpportunities", adminService.getTotalOpportunities());
-                request.setAttribute("totalApplications",  adminService.getTotalApplications());
+                request.setAttribute("totalVolunteers",       adminService.getTotalVolunteers());
+                request.setAttribute("totalOrganizations",    adminService.getTotalOrganizations());
+                request.setAttribute("totalOpportunities",    adminService.getTotalOpportunities());
+                request.setAttribute("totalApplications",     adminService.getTotalApplications());
+                request.setAttribute("recentRegistrations",   adminService.getRecentRegistrations());
                 request.getRequestDispatcher("/views/admin/reports.jsp").forward(request, response);
                 break;
 

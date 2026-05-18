@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.volunteermanagementsystem.model.User" %>
 <%
     if (session == null || session.getAttribute("role") == null ||
             !session.getAttribute("role").equals("admin")) {
@@ -9,6 +11,7 @@
     int totalOrganizations = request.getAttribute("totalOrganizations") != null ? (int) request.getAttribute("totalOrganizations") : 0;
     int totalOpportunities = request.getAttribute("totalOpportunities") != null ? (int) request.getAttribute("totalOpportunities") : 0;
     int totalApplications  = request.getAttribute("totalApplications")  != null ? (int) request.getAttribute("totalApplications")  : 0;
+    List<User> recentRegistrations = (List<User>) request.getAttribute("recentRegistrations");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,10 +83,13 @@
             display: inline-block; padding: 4px 10px; border-radius: 20px;
             font-size: 11px; font-weight: 600; text-transform: uppercase;
         }
-        .badge-active   { background: #e8f5ee; color: #1a6b3c; }
-        .badge-open     { background: #e3f0fb; color: #185fa5; }
-        .badge-pending  { background: #fff8e1; color: #ba7517; }
-        .badge-approved { background: #ede9ff; color: #534ab7; }
+        .badge-active    { background: #e8f5ee; color: #1a6b3c; }
+        .badge-open      { background: #e3f0fb; color: #185fa5; }
+        .badge-pending   { background: #fff8e1; color: #ba7517; }
+        .badge-approved  { background: #ede9ff; color: #534ab7; }
+        .badge-deactivated { background: #fdecea; color: #a32d2d; }
+
+        .empty-row td { text-align: center; color: #999; padding: 24px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -91,10 +97,11 @@
 <div class="sidebar">
     <div class="sidebar-brand">🤝 VolunteerBridge</div>
     <nav class="sidebar-nav">
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=dashboard" class="nav-item">📊 Dashboard</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers" class="nav-item">👥 Manage Users</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers" class="nav-item">⏳ Pending Approvals</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports" class="nav-item active">📈 Reports</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=dashboard"         class="nav-item">📊 Dashboard</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers"       class="nav-item">👥 Manage Users</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers"      class="nav-item">⏳ Pending Approvals</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities" class="nav-item">📋 Opportunities</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports"           class="nav-item active">📈 Reports</a>
     </nav>
     <div class="sidebar-footer">
         <a href="<%= request.getContextPath() %>/LogoutServlet" class="nav-item logout">🚪 Logout</a>
@@ -107,6 +114,7 @@
         <p class="page-subtitle">Summary overview of the entire platform</p>
     </div>
 
+    <%-- ── Stat Cards ── --%>
     <div class="stats-grid">
         <div class="stat-card stat-green">
             <div class="stat-icon">🙋</div>
@@ -126,6 +134,7 @@
         </div>
     </div>
 
+    <%-- ── Platform Summary Table ── --%>
     <div class="table-card">
         <div class="table-card-header">
             <h2>📊 Platform Summary</h2>
@@ -167,7 +176,47 @@
             </table>
         </div>
     </div>
-</main>
 
+    <%-- ── Recent Activity ── --%>
+    <div class="table-card">
+        <div class="table-card-header">
+            <h2>🕐 Recent Registrations</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr><th>#</th><th>Email</th><th>Role</th><th>Status</th><th>Registered At</th></tr>
+                </thead>
+                <tbody>
+                <% if (recentRegistrations == null || recentRegistrations.isEmpty()) { %>
+                <tr class="empty-row"><td colspan="5">No recent registrations found.</td></tr>
+                <% } else {
+                    int count = 1;
+                    for (User u : recentRegistrations) { %>
+                <tr>
+                    <td><%= count++ %></td>
+                    <td><%= u.getEmail() %></td>
+                    <td>
+                        <span class="badge <%= u.getRole().equals("volunteer") ? "badge-active" : "badge-open" %>">
+                            <%= u.getRole() %>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            <%= "active".equals(u.getStatus())      ? "badge-active"      :
+                                "pending".equals(u.getStatus())     ? "badge-pending"     :
+                                "deactivated".equals(u.getStatus()) ? "badge-deactivated" : "badge-pending" %>">
+                            <%= u.getStatus() %>
+                        </span>
+                    </td>
+                    <td><%= u.getCreatedAt() != null ? u.getCreatedAt().toString().substring(0, 16) : "—" %></td>
+                </tr>
+                <% } } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
 </body>
 </html>

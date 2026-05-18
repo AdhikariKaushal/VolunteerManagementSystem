@@ -145,6 +145,36 @@ public class AdminDAO {
         }
     }
 
+    /**
+     * Returns the last 5 registered users for recent activity.
+     * Author: Kaushal Adhikari
+     */
+    public List<com.volunteermanagementsystem.model.User> getRecentRegistrations() {
+        List<com.volunteermanagementsystem.model.User> list = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE role IN ('volunteer', 'organization') " +
+                "ORDER BY created_at DESC LIMIT 5";
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                com.volunteermanagementsystem.model.User u = new com.volunteermanagementsystem.model.User();
+                u.setUserId(rs.getInt("user_id"));
+                u.setEmail(rs.getString("email"));
+                u.setRole(rs.getString("role"));
+                u.setStatus(rs.getString("status"));
+                u.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(u);
+            }
+        } catch (SQLException e) {
+            System.err.println("[AdminDAO.getRecentRegistrations] " + e.getMessage());
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+        return list;
+    }
+
     // ── private helpers ───────────────────────────────────────────────────────
 
     private boolean updateOpportunityStatus(int oppId, String newStatus) {
