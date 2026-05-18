@@ -76,4 +76,5 @@ A web-based platform that connects volunteers with organizations offering volunt
 
 - Darpan Ghimire
 - Kaushal Adhikari
+- Oshan Rai
 - Sneha Tiwari
