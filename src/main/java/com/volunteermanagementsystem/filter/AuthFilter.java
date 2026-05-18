@@ -43,7 +43,8 @@ public class AuthFilter implements Filter {
                         requestURI.contains("/organization/register.jsp")       ||
                         requestURI.contains("/extra/about.jsp")                 ||
                         requestURI.contains("/extra/contact.jsp")               ||
-                        requestURI.contains("/LoginServlet")                    ||
+                        requestURI.contains("/LoginServlet")
+                        || requestURI.contains("/AttendanceServlet")||
                         requestURI.contains("/RegisterVolunteerServlet")        ||
                         requestURI.contains("/RegisterOrganizationServlet")     ||
                         requestURI.contains(".css")                             ||

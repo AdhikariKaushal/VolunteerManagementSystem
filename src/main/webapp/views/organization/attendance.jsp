@@ -1,111 +1,77 @@
-package com.volunteermanagementsystem.controller;
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-import com.volunteermanagementsystem.service.AttendaceService;
-import com.volunteermanagementsystem.util.SessionUtil;
+<html>
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+<head>
+    <title>Attendance Management</title>
+</head>
 
-import java.io.IOException;
-import java.util.List;
+<body>
 
-/**
-* AttendanceServlet
-* Author: Oshan
-* Group: The GOAT
-*/
-@WebServlet("/AttendanceServlet")
-public class AttendanceServlet extends HttpServlet {
+<h2>Volunteer Attendance</h2>
 
-private final AttendaceService attendaceService = new AttendaceService();
+<form action="<%= request.getContextPath() %>/AttendanceServlet"
+      method="post">
 
-@Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-throws ServletException, IOException {
+    <input type="hidden"
+           name="action"
+           value="log">
 
-String action = request.getParameter("action");
-if (action == null) action = "";
+    <label>Application ID:</label>
 
-if (action.equals("viewByOpportunity")) {
-if (!SessionUtil.hasRole(request, "organization")) {
-response.sendRedirect(request.getContextPath() + "/login.jsp");
-return;
-}
-int oppId = Integer.parseInt(request.getParameter("opportunityId"));
-request.setAttribute("attendanceList", attendaceService.getAttendanceByOpportunity(oppId));
-request.setAttribute("opportunityId", oppId);
-request.getRequestDispatcher("/views/organization/attendance.jsp").forward(request, response);
+    <input type="number"
+           name="applicationId"
+           required>
 
-} else if (action.equals("myHistory")) {
-if (!SessionUtil.hasRole(request, "volunteer")) {
-response.sendRedirect(request.getContextPath() + "/login.jsp");
-return;
-}
-int vid = (int) request.getSession().getAttribute("volunteerId");
-request.setAttribute("attendanceList", attendaceService.getAttendanceByVolunteer(vid));
-request.setAttribute("totalHours", attendaceService.getTotalHours(vid));
-request.getRequestDispatcher("/views/volunteer/applicationHistory.jsp").forward(request, response);
+    <br><br>
 
-} else {
-response.sendRedirect(request.getContextPath() + "/login.jsp");
-}
-}
+    <label>Volunteer ID:</label>
 
-@Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-throws ServletException, IOException {
+    <input type="number"
+           name="volunteerId"
+           required>
 
-if (!SessionUtil.hasRole(request, "organization")) {
-response.sendRedirect(request.getContextPath() + "/login.jsp");
-return;
-}
+    <br><br>
 
-String action = request.getParameter("action");
-if (action == null) action = "";
+    <label>Opportunity ID:</label>
 
-if (action.equals("log")) {
-try {
-int appId     = Integer.parseInt(request.getParameter("applicationId"));
-int volId     = Integer.parseInt(request.getParameter("volunteerId"));
-int oppId     = Integer.parseInt(request.getParameter("opportunityId"));
-String status = request.getParameter("status");
-double hours  = Double.parseDouble(request.getParameter("hoursLogged"));
+    <input type="number"
+           name="opportunityId"
+           required>
 
-String error = attendaceService.logAttendance(appId, volId, oppId, status, hours);
-if (error == null) {
-response.sendRedirect(request.getContextPath() +
-"/AttendanceServlet?action=viewByOpportunity&opportunityId=" + oppId + "&success=logged");
-} else {
-request.setAttribute("error", error);
-request.setAttribute("attendanceList", attendaceService.getAttendanceByOpportunity(oppId));
-request.setAttribute("opportunityId", oppId);
-request.getRequestDispatcher("/views/organization/attendance.jsp").forward(request, response);
-}
-} catch (NumberFormatException e) {
-request.setAttribute("error", "Invalid input. Check all fields.");
-request.getRequestDispatcher("/views/organization/attendance.jsp").forward(request, response);
-}
+    <br><br>
 
-} else if (action.equals("update")) {
-try {
-int attId     = Integer.parseInt(request.getParameter("attendanceId"));
-int oppId     = Integer.parseInt(request.getParameter("opportunityId"));
-String status = request.getParameter("status");
-double hours  = Double.parseDouble(request.getParameter("hoursLogged"));
+    <label>Status:</label>
 
-String error = attendaceService.updateAttendance(attId, status, hours);
-response.sendRedirect(request.getContextPath() +
-"/AttendanceServlet?action=viewByOpportunity&opportunityId=" + oppId +
-(error == null ? "&success=updated" : ""));
-} catch (NumberFormatException e) {
-response.sendRedirect(request.getContextPath() + "/OrganizationServlet?action=dashboard");
-}
+    <select name="status">
 
-} else {
-response.sendRedirect(request.getContextPath() + "/OrganizationServlet?action=dashboard");
-}
-}
-}
+        <option value="PRESENT">
+            Present
+        </option>
+
+        <option value="ABSENT">
+            Absent
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <label>Hours Logged:</label>
+
+    <input type="number"
+           step="0.1"
+           name="hoursLogged"
+           required>
+
+    <br><br>
+
+    <button type="submit">
+        Mark Attendance
+    </button>
+
+</form>
+
+</body>
+
+</html>
