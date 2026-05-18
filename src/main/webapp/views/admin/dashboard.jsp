@@ -58,8 +58,10 @@
             display: flex; align-items: center; gap: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid transparent;
             transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            cursor: pointer;
         }
-        a.stat-card:hover {
+        .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
@@ -96,10 +98,11 @@
 <div class="sidebar">
     <div class="sidebar-brand">🤝 VolunteerBridge</div>
     <nav class="sidebar-nav">
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=dashboard" class="nav-item active">📊 Dashboard</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers" class="nav-item">👥 Manage Users</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers" class="nav-item">⏳ Pending Approvals</a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports" class="nav-item">📈 Reports</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=dashboard"           class="nav-item active">📊 Dashboard</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers"         class="nav-item">👥 Manage Users</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers"        class="nav-item">⏳ Pending Approvals</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities" class="nav-item">📋 Opportunities</a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports"             class="nav-item">📈 Reports</a>
     </nav>
     <div class="sidebar-footer">
         <a href="<%= request.getContextPath() %>/LogoutServlet" class="nav-item logout">🚪 Logout</a>
@@ -117,22 +120,26 @@
     <% } %>
 
     <div class="stats-grid">
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=volunteer" class="stat-card stat-green" style="text-decoration: none;">
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=volunteer"
+           class="stat-card stat-green">
             <div class="stat-icon">🙋</div>
             <div><div class="stat-number"><%= totalVolunteers %></div><div class="stat-label">Total Volunteers</div></div>
         </a>
-        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=organization" class="stat-card stat-blue" style="text-decoration: none;">
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageUsers&role=organization"
+           class="stat-card stat-blue">
             <div class="stat-icon">🏢</div>
             <div><div class="stat-number"><%= totalOrganizations %></div><div class="stat-label">Organizations</div></div>
         </a>
-        <div class="stat-card stat-amber">
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities"
+           class="stat-card stat-amber">
             <div class="stat-icon">📋</div>
             <div><div class="stat-number"><%= totalOpportunities %></div><div class="stat-label">Opportunities</div></div>
-        </div>
-        <div class="stat-card stat-purple">
+        </a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=reports"
+           class="stat-card stat-purple">
             <div class="stat-icon">📝</div>
             <div><div class="stat-number"><%= totalApplications %></div><div class="stat-label">Applications</div></div>
-        </div>
+        </a>
     </div>
 
     <div class="section-title">Quick Actions</div>
@@ -142,6 +149,9 @@
         </a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=pendingUsers" class="action-card">
             <span class="action-icon">⏳</span><span class="action-label">Pending Approvals</span>
+        </a>
+        <a href="<%= request.getContextPath() %>/AdminServlet?action=manageOpportunities" class="action-card">
+            <span class="action-icon">📋</span><span class="action-label">Opportunities</span>
         </a>
         <a href="<%= request.getContextPath() %>/AdminServlet?action=reports" class="action-card">
             <span class="action-icon">📈</span><span class="action-label">View Reports</span>
