@@ -21,14 +21,10 @@ A web-based platform that connects volunteers with organizations offering volunt
 - Track attendance of volunteers
 
 ### Admin
-- Login and Session
 - Manage all users (volunteers and organizations)
 - Activate or deactivate accounts
 - Manage and oversee all opportunities
-- View summary reports
-- View all applications
-- Dashboard with cards
-- Delete user accounts
+- View system-wide reports
 
 ---
 
@@ -79,6 +75,6 @@ A web-based platform that connects volunteers with organizations offering volunt
 ## Contributors
 
 - Darpan Ghimire
+- Oshan Rai
 - Kaushal Adhikari
 - Sneha Tiwari
-- Oshan
